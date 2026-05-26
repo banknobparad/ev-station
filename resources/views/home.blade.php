@@ -119,14 +119,33 @@
     <a class="navbar-brand-ev" href="/">
         <i class="bi bi-lightning-charge-fill"></i> EV<span>Station</span>
     </a>
-    <div class="d-flex gap-2">
-        <a href="{{ route('login') }}" class="btn-ev-lg outline">
-            <i class="bi bi-person"></i> เข้าสู่ระบบ
-        </a>
-        <a href="{{ route('register.phone') }}" class="btn-ev-lg primary">
-            <i class="bi bi-person-plus"></i> สมัครสมาชิก
-        </a>
-    </div>
+
+    @guest
+        <div class="d-flex gap-2">
+            <a href="{{ route('login') }}" class="btn-ev-lg outline">
+                <i class="bi bi-person"></i> เข้าสู่ระบบ
+            </a>
+            <a href="{{ route('register.phone') }}" class="btn-ev-lg primary">
+                <i class="bi bi-person-plus"></i> สมัครสมาชิก
+            </a>
+        </div>
+    @else
+        <div class="d-flex gap-2">
+            @if(auth()->user()->role === 'driver')
+                <a href="{{ route('driver.map') }}" class="btn-ev-lg outline">
+                    <i class="bi bi-map"></i> แผนที่ของฉัน
+                </a>
+            @elseif(auth()->user()->role === 'provider')
+                <a href="{{ route('provider.dashboard') }}" class="btn-ev-lg outline">
+                    <i class="bi bi-speedometer2"></i> แดชบอร์ด
+                </a>
+            @elseif(auth()->user()->role === 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="btn-ev-lg outline">
+                    <i class="bi bi-grid"></i> แดชบอร์ด
+                </a>
+            @endif
+        </div>
+    @endguest
 </nav>
 
 {{-- แผนที่เต็มหน้า --}}
