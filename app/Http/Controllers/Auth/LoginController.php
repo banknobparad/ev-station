@@ -13,11 +13,13 @@ class LoginController extends Controller
     {
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
-        } elseif ($user->role === 'provider') {
-            return redirect()->route('provider.dashboard');
-        } else {
-            return redirect()->route('driver.map');
         }
+
+        if ($user->role === 'provider') {
+            return redirect()->route('provider.dashboard');
+        }
+
+        return redirect()->route('driver.map');
     }
     use AuthenticatesUsers;
 

@@ -80,7 +80,7 @@
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
                                 <span class="dropdown-item-text text-muted small px-3">
-                                    {{ auth()->user()->email }}
+                                    {{ auth()->user()->email ?? '-' }}
                                 </span>
                             </li>
                             <li>

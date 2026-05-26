@@ -23,6 +23,10 @@
             <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
         </div>
         <div class="mb-3">
+            <label class="form-label">เบอร์โทร (10 หลัก)</label>
+            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" required>
+        </div>
+        <div class="mb-3">
             <label class="form-label">รหัสผ่าน</label>
             <input type="password" name="password" class="form-control" required>
         </div>
