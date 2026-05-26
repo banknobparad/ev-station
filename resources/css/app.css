@@ -9,3 +9,218 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+.driver-content {
+    min-height: 100vh;
+    background: #EEF4FB;
+    padding-bottom: 94px;
+    font-family: var(--font-sans);
+}
+
+.bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    z-index: 1050;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+}
+
+.bottom-nav-item {
+    flex: 1;
+    text-align: center;
+    color: #6b7280;
+    padding: 0.5rem 0.25rem;
+    border-radius: 18px;
+    transition: background 0.2s ease, color 0.2s ease;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    font-size: 0.82rem;
+}
+
+.bottom-nav-item.active,
+.bottom-nav-item:hover {
+    background: #eef6ff;
+    color: #2563eb;
+}
+
+.driver-app-shell {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 60px); /* ปรับตามความสูงของ Navbar หลักของคุณ */
+        overflow: hidden;
+    }
+
+.driver-app-shell #map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    filter: saturate(1.04) contrast(0.96);
+}
+
+.driver-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    pointer-events: none;
+    z-index: 1020;
+}
+
+.driver-topbar,
+.driver-card,
+.driver-sheet {
+    pointer-events: auto;
+}
+
+.driver-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.driver-topbar h2 {
+    margin: 0;
+    font-size: 1.45rem;
+    line-height: 1.2;
+}
+
+.driver-top-action {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+}
+
+.driver-card {
+    background: rgba(255,255,255,0.96);
+    border-radius: 25px;
+    padding: 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.driver-search-card {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.driver-search-input {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(15,23,42,0.08);
+}
+
+.driver-search-input i {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.driver-search-input input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 1rem;
+    color: #0f172a;
+    outline: none;
+}
+
+.driver-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 96px;
+    border-radius: 30px 30px 0 0;
+    padding: 1.25rem;
+    background: rgba(255,255,255,0.97);
+    z-index: 1020;
+    min-height: 280px;
+    max-height: calc(100vh - 156px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.driver-sheet .row {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.driver-sheet h5 {
+    margin-bottom: 0.25rem;
+}
+
+.driver-station-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 0.85rem 1rem;
+    display: block;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.driver-station-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.station-badge {
+    min-width: 54px;
+    min-height: 54px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.station-badge.available {
+    background: #22c55e;
+}
+
+.station-badge.busy {
+    background: #f97316;
+}
+
+.driver-sheet .text-primary {
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .driver-topbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .driver-top-action {
+        width: 100%;
+    }
+
+    .driver-search-card {
+        width: 100%;
+    }
+
+    .driver-sheet {
+        bottom: 82px;
+    }
+}

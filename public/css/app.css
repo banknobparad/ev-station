@@ -23,6 +23,33 @@ body {
     min-height: 100vh;
 }
 
+/* Driver map shell: full viewport, prevent page scrolling on map view */
+.driver-app-shell {
+    position: fixed;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    height: 100%;
+    overflow: hidden;
+    z-index: 900;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+}
+
+.driver-overlay {
+    position: absolute;
+    top: 0.9rem;
+    left: 0;
+    right: 0;
+    z-index: 1020;
+    pointer-events: auto;
+}
+
 /* ===== NAVBAR ===== */
 .navbar-ev {
     background: var(--ev-white);
@@ -399,7 +426,259 @@ body {
 }
 
 /* ===== DRIVER CONTENT ===== */
-.driver-content { padding-bottom: 80px; }
+.driver-content {
+    min-height: 100vh;
+    padding-bottom: 80px;
+    position: relative;
+    background: #eef4fb;
+}
+
+.driver-app-shell {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.driver-app-shell #map {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.driver-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 1020;
+    pointer-events: none;
+}
+
+.driver-overlay > * {
+    pointer-events: auto;
+}
+
+.search-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.driver-search-input.compact {
+    background: var(--ev-white);
+    border: 1px solid var(--ev-border);
+    border-radius: 12px;
+    padding: 0.45rem 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.driver-search-input.compact i { font-size: 1rem; color: var(--ev-muted); }
+.driver-search-input.compact input { border: none; background: transparent; outline: none; width:100%; font-size:0.95rem; }
+.icon-btn { background: var(--ev-white); border: 1px solid var(--ev-border); padding: 0.5rem; border-radius: 10px; }
+
+.search-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.driver-search-input {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.driver-search-input i {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.driver-search-input input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 1rem;
+    color: #0f172a;
+    outline: none;
+}
+
+.icon-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: #ffffff;
+    color: #ef4444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.sheet-actions-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.sheet-actions-vertical .sheet-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--ev-border);
+    background: var(--ev-white);
+    color: var(--ev-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.sheet-actions-vertical .sheet-icon-btn.small i { font-size: 1rem; }
+.sheet-actions-vertical .sheet-icon-btn:hover { background:#f4f7fb }
+
+.driver-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(56px + env(safe-area-inset-bottom)); /* flush to bottom-nav */
+    background: var(--ev-white);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    padding: 0.5rem 0.5rem;
+    z-index: 1030;
+    border: 1px solid var(--ev-border);
+    box-shadow: none;
+    max-height: 34vh;
+    overflow: hidden;
+    transition: none; /* prevent sheet from animating/moving on scroll */
+}
+
+/* Prevent parent/body from scrolling when interacting with sheet; ensure only inner scroll works */
+.driver-sheet,
+.driver-sheet .sheet-scroll {
+    overscroll-behavior: contain;
+}
+
+.driver-sheet .row { margin: 0; }
+.driver-sheet .sheet-header { padding-bottom: 0.5rem; }
+.driver-sheet .sheet-scroll { max-height: calc(34vh - 64px); overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 0.25rem; }
+
+.driver-station-card { padding: 0.6rem; border-radius: 12px; }
+.station-badge { width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:10px; font-weight:700 }
+.driver-station-card .fw-semibold { font-size:0.95rem }
+.driver-station-card .text-muted { font-size:0.82rem }
+
+/* Floating action icons top-right, separate from sheet */
+.floating-actions {
+    position: fixed;
+    top: 15.6rem;
+    right: 0.9rem;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: auto;
+}
+
+.floating-actions .sheet-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--ev-border);
+    background: var(--ev-white);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+}
+
+@media(min-width:768px) {
+    .driver-sheet { max-height: 30vh; }
+}
+
+.driver-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 82px;
+    border-radius: 24px 24px 0 0;
+    padding: 0.5rem 0.5rem 0.8rem;
+    background: rgba(255, 255, 255, 0.96);
+    z-index: 1020;
+    max-height: 420px;
+    overflow: hidden;
+}
+
+.sheet-scroll {
+    max-height: 132px;
+    overflow-y: auto;
+    padding-right: 0.4rem;
+}
+
+.sheet-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sheet-scroll::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.18);
+    border-radius: 999px;
+}
+
+.driver-station-card {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    transition: none;
+}
+
+.driver-station-card:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.station-badge {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.station-badge.available { background: #22c55e; }
+.station-badge.busy { background: #f97316; }
+
+@media (max-width: 768px) {
+    .driver-sheet { bottom: 72px; }
+    .search-row { grid-template-columns: 1fr auto; }
+    .icon-card { font-size: 0.85rem; }
+    .icon-btn { width: 48px; height: 48px; }
+}
 
 /* ===== MISC ===== */
 p, span, td, th, label, small, li { color: inherit; }

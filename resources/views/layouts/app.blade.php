@@ -38,7 +38,7 @@
                     <i class="bi bi-calendar-check-fill"></i>
                     <span>My Booking</span>
                 </a>
-                <a href="#" class="bottom-nav-item">
+                <a href="{{ route('driver.account') }}" class="bottom-nav-item {{ request()->routeIs('driver.account') ? 'active' : '' }}">
                     <i class="bi bi-person-fill"></i>
                     <span>Account</span>
                 </a>

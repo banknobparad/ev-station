@@ -31,6 +31,8 @@ Route::get('/home', function () { return redirect('/'); })->middleware('auth');
 // ===== Driver =====
 Route::middleware(['auth', 'role:driver'])->group(function () {
     Route::get('/map', [App\Http\Controllers\Driver\MapController::class, 'index'])->name('driver.map');
+    Route::get('/account', [App\Http\Controllers\Driver\AccountController::class, 'index'])->name('driver.account');
+    Route::post('/account', [App\Http\Controllers\Driver\AccountController::class, 'update'])->name('driver.account.update');
     Route::get('/station/{station}', [App\Http\Controllers\Driver\MapController::class, 'show'])->name('driver.station');
     Route::post('/station/{station}/review', [App\Http\Controllers\Driver\ReviewController::class, 'store'])->name('driver.review.store');
     Route::delete('/review/{review}', [App\Http\Controllers\Driver\ReviewController::class, 'destroy'])->name('driver.review.destroy');

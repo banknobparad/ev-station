@@ -12,7 +12,18 @@
         </div>
     @endif
 
-    <form action="{{ route('provider.stations.store') }}" method="POST" enctype="multipart/form-data">
+    {{-- 📍 Card สำหรับแผนที่ (ย้ายมาไว้ด้านบน) --}}
+    <div class="card mb-4" style="clear: both; position: relative; z-index: 1;">
+        <div class="card-header">
+            <h5 class="mb-0">ปักหมุดบนแผนที่ <small class="text-muted">(คลิกบนแผนที่เพื่อเลือกตำแหน่ง)</small></h5>
+        </div>
+        <div class="card-body p-0">
+            <div id="map" style="height: 400px; border-radius: 0 0 8px 8px; position: relative; z-index: 1;"></div>
+        </div>
+    </div>
+
+    {{-- 📝 ฟอร์มกรอกข้อมูล (อยู่ด้านล่างแผนที่อย่างเป็นระเบียบ) --}}
+    <form action="{{ route('provider.stations.store') }}" method="POST" enctype="multipart/form-data" style="position: relative; z-index: 10;">
         @csrf
         <div class="mb-3">
             <label class="form-label">ชื่อสถานี</label>
@@ -23,18 +34,12 @@
         <div class="mb-3">
             <label class="form-label">ค้นหาสถานที่</label>
             <input type="text" id="search" class="form-control" placeholder="พิมพ์ชื่อสถานที่...">
-            <div id="search-results" class="list-group mt-1"></div>
+            <div id="search-results" class="list-group mt-1" style="position: absolute; width: 100%; z-index: 1050;"></div>
         </div>
 
         <div class="mb-3">
             <label class="form-label">ที่อยู่</label>
             <textarea name="address" id="address" class="form-control" required>{{ old('address') }}</textarea>
-        </div>
-
-        {{-- แผนที่ปักหมุด --}}
-        <div class="mb-3">
-            <label class="form-label">ปักหมุดบนแผนที่ <small class="text-muted">(คลิกบนแผนที่เพื่อเลือกตำแหน่ง)</small></label>
-            <div id="map" style="height: 400px; border-radius: 8px;"></div>
         </div>
 
         <div class="row">
@@ -80,6 +85,11 @@
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
+    // 🔥 บั๊กแก้แผนที่ลอยทับ/เบี้ยว: สั่งให้รีเซ็ตขนาดแผนที่หลังจากโหลดหน้าเว็บเสร็จทันที
+    setTimeout(function() {
+        map.invalidateSize();
+    }, 200);
+
     let marker = null;
 
     // 📍 ระบุตำแหน่งปัจจุบัน
@@ -90,6 +100,7 @@
             map.setView([lat, lng], 15);
             placeMarker(lat, lng);
             fetchAddress(lat, lng);
+            map.invalidateSize(); // รีเซ็ตขนาดอีกครั้งหลังได้ตำแหน่ง
         }, function() {
             console.log('ไม่สามารถดึงตำแหน่งได้');
         });
@@ -126,7 +137,7 @@
         });
     }
 
-    // ค้นหาสถานที่ — แก้ให้ใส่ User-Agent ด้วย
+    // ค้นหาสถานที่
     let searchTimeout = null;
     document.getElementById('search').addEventListener('input', function() {
         clearTimeout(searchTimeout);
@@ -164,12 +175,13 @@
                         document.getElementById('address').value = item.display_name;
                         document.getElementById('search').value = item.display_name;
                         container.innerHTML = '';
+                        setTimeout(() => map.invalidateSize(), 100);
                     });
                     container.appendChild(btn);
                 });
             })
             .catch(() => {
-                document.getElementById('search-results').innerHTML = 
+                document.getElementById('search-results').innerHTML =
                     '<div class="list-group-item text-danger">เกิดข้อผิดพลาด ลองใหม่อีกครั้งครับ</div>';
             });
         }, 600);
