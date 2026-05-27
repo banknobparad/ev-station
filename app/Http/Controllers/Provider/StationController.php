@@ -38,14 +38,15 @@ class StationController extends Controller
         }
 
         Station::create([
-            'user_id'    => Auth::id(),
-            'name'       => $request->name,
-            'address'    => $request->address,
-            'lat'        => $request->lat,
-            'lng'        => $request->lng,
-            'open_time'  => $request->open_time,
-            'close_time' => $request->close_time,
-            'image'      => $imagePath,
+            'user_id'           => Auth::id(),
+            'name'              => $request->name,
+            'address'           => $request->address,
+            'lat'               => $request->lat,
+            'lng'               => $request->lng,
+            'open_time'         => $request->open_time,
+            'close_time'        => $request->close_time,
+            'image'             => $imagePath,
+            'approval_status'  => 'approved',
         ]);
 
         return redirect()->route('provider.stations.index')

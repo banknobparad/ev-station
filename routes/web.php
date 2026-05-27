@@ -33,6 +33,11 @@ Route::middleware(['auth', 'role:driver'])->group(function () {
     Route::get('/map', [App\Http\Controllers\Driver\MapController::class, 'index'])->name('driver.map');
     Route::get('/account', [App\Http\Controllers\Driver\AccountController::class, 'index'])->name('driver.account');
     Route::post('/account', [App\Http\Controllers\Driver\AccountController::class, 'update'])->name('driver.account.update');
+
+    // Driver add station (pending)
+    Route::get('/account/stations/create', [App\Http\Controllers\Driver\StationController::class, 'create'])->name('driver.stations.create');
+    Route::post('/account/stations', [App\Http\Controllers\Driver\StationController::class, 'store'])->name('driver.stations.store');
+
     Route::get('/station/{station}', [App\Http\Controllers\Driver\MapController::class, 'show'])->name('driver.station');
     Route::post('/station/{station}/review', [App\Http\Controllers\Driver\ReviewController::class, 'store'])->name('driver.review.store');
     Route::delete('/review/{review}', [App\Http\Controllers\Driver\ReviewController::class, 'destroy'])->name('driver.review.destroy');
@@ -51,6 +56,12 @@ Route::middleware(['auth', 'role:provider'])->prefix('provider')->name('provider
 // ===== Admin =====
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    // Stations approval
+    Route::get('stations/pending', [App\Http\Controllers\Admin\StationApprovalController::class, 'indexPending'])->name('stations.pending');
+    Route::post('stations/{station}/approve', [App\Http\Controllers\Admin\StationApprovalController::class, 'approve'])->name('stations.approve');
+    Route::delete('stations/{station}/reject', [App\Http\Controllers\Admin\StationApprovalController::class, 'reject'])->name('stations.reject');
+
     Route::resource('users', App\Http\Controllers\Admin\UserController::class)
         ->only(['index', 'create', 'store', 'destroy']);
     Route::get('reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');

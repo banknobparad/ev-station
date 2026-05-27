@@ -28,14 +28,6 @@
                 <label class="form-label">จำนวนหัวชาร์จ</label>
                 <input type="number" name="total" class="form-control" min="1" value="1" required>
             </div>
-            <div class="mb-3">
-                <label class="form-label">สถานะเริ่มต้น</label>
-                <select name="status" class="form-select" required>
-                    <option value="available">Available</option>
-                    <option value="busy">Busy</option>
-                    <option value="maintenance">Maintenance</option>
-                </select>
-            </div>
             <button type="submit" class="btn btn-success">บันทึก</button>
             <a href="{{ route('provider.stations.connectors.index', $station) }}" class="btn btn-secondary">ยกเลิก</a>
         </form>

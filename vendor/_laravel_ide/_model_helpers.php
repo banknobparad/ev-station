@@ -7,7 +7,6 @@ namespace App\Models {
      *
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
-     * @property mixed $status
      * @property mixed $total
      * @property mixed $type
      * @property mixed $station_id
@@ -17,7 +16,6 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Connector>|Connector whereStationId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Connector>|Connector whereType($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Connector>|Connector whereTotal($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Connector>|Connector whereStatus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Connector>|Connector whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Connector>|Connector whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Connector>|Connector newModelQuery()
@@ -1002,8 +1000,11 @@ namespace App\Models {
     /**
      * App\Models\Station
      *
+     * @property mixed $approval_status
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
+     * @property mixed $created_by_role
+     * @property mixed $status
      * @property string|null $close_time
      * @property string|null $open_time
      * @property string|null $image
@@ -1029,8 +1030,11 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereImage($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereOpenTime($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereCloseTime($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereCreatedByRole($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereApprovalStatus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station query()

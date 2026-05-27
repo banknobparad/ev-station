@@ -14,10 +14,17 @@ class DashboardController extends Controller
         $totalProviders = User::where('role', 'provider')->count();
         $totalStations  = Station::count();
 
+        $pendingStations = Station::with('user')
+            ->where('approval_status', 'pending')
+            ->latest()
+            ->limit(5)
+            ->get();
+
         return view('admin.dashboard', compact(
             'totalDrivers',
             'totalProviders',
-            'totalStations'
+            'totalStations',
+            'pendingStations'
         ));
     }
 }

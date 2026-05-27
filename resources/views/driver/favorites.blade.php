@@ -19,10 +19,7 @@
                     <h6 class="card-title">{{ $fav->station->name }}</h6>
                     <p class="text-muted small">📍 {{ Str::limit($fav->station->address, 60) }}</p>
 
-                    {{-- สถานะหัวชาร์จ --}}
-                    @foreach($fav->station->connectors as $connector)
-                    <span class="badge bg-primary me-1">{{ $connector->type }}</span>
-                    @endforeach
+
 
                     <div class="mt-2">
                         <a href="{{ route('driver.station', $fav->station) }}" class="btn btn-primary btn-sm">ดูรายละเอียด</a>

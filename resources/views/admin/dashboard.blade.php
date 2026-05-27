@@ -36,6 +36,67 @@
         </div>
     </div>
 
+    {{-- Approval Card --}}
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                        <div>
+                            <h5 class="mb-0">รออนุมัติสถานีจากคนขับ (Pending)</h5>
+                            <small class="text-muted">อนุมัติ/ปฏิเสธเพื่อให้ขึ้นบนแผนที่</small>
+                        </div>
+                        <a href="{{ route('admin.stations.pending') }}" class="btn btn-ev-primary">
+                            ดูทั้งหมด
+                        </a>
+                    </div>
+
+                    @if($pendingStations->isEmpty())
+                        <div class="text-muted">ไม่มีสถานีรออนุมัติครับ</div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>สถานี</th>
+                                        <th>ผู้ส่ง</th>
+                                        <th>จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pendingStations as $station)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>
+                                                <strong>{{ $station->name }}</strong>
+                                                <div class="text-muted small">{{ \Illuminate\Support\Str::limit($station->address, 50) }}</div>
+                                            </td>
+                                            <td>{{ $station->user->name ?? '-' }}</td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <form action="{{ route('admin.stations.approve', $station) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-success">อนุมัติ</button>
+                                                    </form>
+                                                    <form action="{{ route('admin.stations.reject', $station) }}" method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('ปฏิเสธและลบสถานีนี้?')">ปฏิเสธ</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Menu Cards --}}
     <div class="row g-3">
         <div class="col-md-6">

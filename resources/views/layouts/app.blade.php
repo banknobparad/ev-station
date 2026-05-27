@@ -34,9 +34,9 @@
                     <i class="bi bi-bookmark-fill"></i>
                     <span>Saved</span>
                 </a>
-                <a href="#" class="bottom-nav-item">
-                    <i class="bi bi-calendar-check-fill"></i>
-                    <span>My Booking</span>
+                <a href="{{ route('driver.stations.create') }}" class="bottom-nav-item {{ request()->routeIs('driver.stations.create','driver.stations.store') ? 'active' : '' }}">
+                    <i class="bi bi-plus-circle-fill"></i>
+                    <span>เพิ่มสถานี</span>
                 </a>
                 <a href="{{ route('driver.account') }}" class="bottom-nav-item {{ request()->routeIs('driver.account') ? 'active' : '' }}">
                     <i class="bi bi-person-fill"></i>

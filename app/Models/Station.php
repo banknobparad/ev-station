@@ -14,8 +14,10 @@ class Station extends Model
         'lng',
         'image',
         'open_time',
-        'close_time'
+        'close_time',
+        'approval_status',
     ];
+
 
     public function user()
     {

@@ -9,7 +9,10 @@ class MapController extends Controller
 {
     public function index()
     {
-        $stations = Station::with('connectors')->get();
+        $stations = Station::with('connectors')
+            ->where('approval_status', 'approved')
+            ->get();
+
         return view('driver.map', compact('stations'));
     }
 

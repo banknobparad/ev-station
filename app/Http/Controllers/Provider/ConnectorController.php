@@ -29,16 +29,14 @@ class ConnectorController extends Controller
         if ($station->user_id !== Auth::id()) abort(403);
 
         $request->validate([
-            'type'   => 'required|in:CCS2,CHAdeMO,Type2,GB/T',
-            'total'  => 'required|integer|min:1',
-            'status' => 'required|in:available,busy,maintenance',
+            'type'  => 'required|in:CCS2,CHAdeMO,Type2,GB/T',
+            'total' => 'required|integer|min:1',
         ]);
 
         Connector::create([
             'station_id' => $station->id,
             'type'       => $request->type,
             'total'      => $request->total,
-            'status'     => $request->status,
         ]);
 
         return redirect()->route('provider.stations.connectors.index', $station)
@@ -49,14 +47,9 @@ class ConnectorController extends Controller
     {
         if ($station->user_id !== Auth::id()) abort(403);
 
-        $request->validate([
-            'status' => 'required|in:available,busy,maintenance',
-        ]);
-
-        $connector->update(['status' => $request->status]);
-
+        // ตัดระบบ Connector Status ออกแล้ว ไม่ต้องอัปเดตสถานะ
         return redirect()->route('provider.stations.connectors.index', $station)
-            ->with('success', 'อัปเดตสถานะสำเร็จแล้วครับ');
+            ->with('success', 'อัปเดตหัวชาร์จสำเร็จแล้วครับ');
     }
 
     public function destroy(Station $station, Connector $connector)

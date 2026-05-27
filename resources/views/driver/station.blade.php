@@ -43,29 +43,7 @@
         </div>
     </div>
 
-    {{-- หัวชาร์จ --}}
-    <div class="card mb-4">
-        <div class="card-header"><strong>🔌 หัวชาร์จ</strong></div>
-        <div class="card-body">
-            @forelse($station->connectors as $connector)
-            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                <div>
-                    <span class="badge bg-primary">{{ $connector->type }}</span>
-                    <span class="ms-2">จำนวน {{ $connector->total }} หัว</span>
-                </div>
-                @if($connector->status === 'available')
-                    <span class="badge bg-success">Available</span>
-                @elseif($connector->status === 'busy')
-                    <span class="badge bg-warning text-dark">Busy</span>
-                @else
-                    <span class="badge bg-danger">Maintenance</span>
-                @endif
-            </div>
-            @empty
-            <p class="text-muted">ยังไม่มีข้อมูลหัวชาร์จครับ</p>
-            @endforelse
-        </div>
-    </div>
+
 
     {{-- ฟอร์มรีวิว --}}
     @php

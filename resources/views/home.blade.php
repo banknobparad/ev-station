@@ -169,16 +169,16 @@
         <div style="width:1px; height:40px; background:#eee"></div>
         <div class="stat-item">
             <div class="num" style="color:#2563EB">
-                {{ $stations->filter(fn($s) => $s->connectors->where('status','available')->count() > 0)->count() }}
+                {{ $stations->count() }}
             </div>
-            <div class="lbl">ว่างตอนนี้</div>
+            <div class="lbl">สถานีมีหัวชาร์จ</div>
+
         </div>
         <div style="width:1px; height:40px; background:#eee"></div>
         <div class="stat-item">
-            <div class="num" style="color:#D97706">
-                {{ $stations->filter(fn($s) => $s->connectors->where('status','busy')->count() > 0)->count() }}
-            </div>
-            <div class="lbl">กำลังใช้งาน</div>
+            <div class="num" style="color:#D97706">-</div>
+            <div class="lbl">กำลังใช้งาน (ตัดสถานะ)</div>
+
         </div>
         <div style="display:none" class="d-md-block">
             <a href="{{ route('register.phone') }}" class="btn-ev-lg primary">
@@ -202,15 +202,13 @@
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     function getIcon(station) {
-        const connectors = station.connectors;
-        const hasAvailable = connectors.some(c => c.status === 'available');
-        const allMaintenance = connectors.every(c => c.status === 'maintenance');
-        let color = hasAvailable ? '#2DC653' : (allMaintenance ? '#EF4444' : '#F59E0B');
-
         return L.divIcon({
+
+
             className: '',
             html: `<div style="
-                background:${color}; color:white;
+                    background:#4285F4; color:white;
+
                 width:36px; height:36px; border-radius:50%;
                 display:flex; align-items:center; justify-content:center;
                 border:3px solid white;
@@ -223,14 +221,13 @@
 
     stations.forEach(station => {
         const marker = L.marker([station.lat, station.lng], { icon: getIcon(station) }).addTo(map);
-        const available = station.connectors.filter(c => c.status === 'available').length;
-        const total = station.connectors.length;
+
 
         marker.bindPopup(`
             <div style="min-width:200px; font-family:Inter,sans-serif">
                 <strong style="font-size:1rem">${station.name}</strong><br>
                 <small style="color:#6B7280">${station.address}</small><br><br>
-                <span>🔌 ว่าง ${available}/${total} หัว</span><br>
+
                 <span>🕐 ${station.open_time ?? '-'} - ${station.close_time ?? '-'}</span><br><br>
                 <a href="/login" style="
                     display:block; text-align:center;

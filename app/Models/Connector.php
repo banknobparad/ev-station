@@ -9,8 +9,7 @@ class Connector extends Model
     protected $fillable = [
         'station_id',
         'type',
-        'total',
-        'status'
+        'total'
     ];
 
     public function station()

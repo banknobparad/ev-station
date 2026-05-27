@@ -29,8 +29,6 @@
                         <th>#</th>
                         <th>ประเภทหัวชาร์จ</th>
                         <th>จำนวน</th>
-                        <th>สถานะ</th>
-                        <th>อัปเดตสถานะ</th>
                         <th>ลบ</th>
                     </tr>
                 </thead>
@@ -44,34 +42,6 @@
                             </span>
                         </td>
                         <td>{{ $connector->total }} หัว</td>
-                        <td>
-                            @if($connector->status === 'available')
-                                <span class="badge bg-success">
-                                    <i class="bi bi-check-circle me-1"></i>Available
-                                </span>
-                            @elseif($connector->status === 'busy')
-                                <span class="badge bg-warning">
-                                    <i class="bi bi-clock me-1"></i>Busy
-                                </span>
-                            @else
-                                <span class="badge bg-danger">
-                                    <i class="bi bi-tools me-1"></i>Maintenance
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            <form action="{{ route('provider.stations.connectors.update', [$station, $connector]) }}"
-                                  method="POST" class="d-flex gap-2">
-                                @csrf
-                                @method('PUT')
-                                <select name="status" class="form-select form-select-sm" style="width:auto">
-                                    <option value="available" {{ $connector->status === 'available' ? 'selected' : '' }}>Available</option>
-                                    <option value="busy"      {{ $connector->status === 'busy'      ? 'selected' : '' }}>Busy</option>
-                                    <option value="maintenance" {{ $connector->status === 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                                </select>
-                                <button class="btn btn-sm btn-ev-primary">บันทึก</button>
-                            </form>
-                        </td>
                         <td>
                             <form action="{{ route('provider.stations.connectors.destroy', [$station, $connector]) }}"
                                   method="POST">

@@ -30,7 +30,7 @@
         </div>
 
         <div class="driver-sheet">
-            <div class="sheet-header d-flex align-items-center justify-content-between mb-2">
+            <div class="sheet-header d-flex align-items-center justify-content-between mb-2 p-1">
                 <div class="flex-grow-1">
                     <div class="text-uppercase text-secondary small" style="font-weight: 500;">
                         รายชื่อสถานี ค้นเจอ <span class="text-primary fw-bold">{{ $stations->count() }}</span> สถานี
@@ -41,7 +41,7 @@
                 </a>
             </div>
 
-            <div class="d-flex align-items-center justify-content-between bg-light rounded-3 p-2 mb-2" style="font-size: 0.85rem;">
+            <div class="d-flex align-items-center justify-content-between bg-light rounded-3 p-1 mb-2" style="font-size: 0.85rem;">
                 <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 py-1"
                     onclick="window.location.reload();">
                     <i class="bi bi-arrow-clockwise"></i> อัพเดทข้อมูล
@@ -54,10 +54,7 @@
             <div class="sheet-scroll" style="overflow-y: auto; flex-grow: 1; -webkit-overflow-scrolling: touch;">
                 <div class="row g-2" id="station-list-container">
                     @foreach ($stations as $station)
-                        @php
-                            $available = $station->connectors->where('status', 'available')->count();
-                            $total = $station->connectors->count();
-                        @endphp
+
                         <div class="col-12 station-item-wrapper" data-distance="999999">
                             <a href="{{ route('driver.station', $station) }}"
                                 class="driver-card driver-station-card text-decoration-none text-dark d-flex align-items-start gap-3 p-3"
@@ -89,31 +86,7 @@
                                         </span>
                                     </div>
 
-                                    <div class="d-flex align-items-center gap-2">
-                                        @if ($available > 0)
-                                            <span class="badge"
-                                                style="background-color: #e8f0fe; color: #1a73e8; font-weight: 500; font-size: 0.75rem; padding: 6px 12px; border-radius: 6px;">
-                                                พร้อมใช้งาน
-                                            </span>
-                                            <span class="d-inline-flex align-items-center justify-content-center"
-                                                style="background: linear-gradient(135deg, #a8ff78, #78ffd6); width: 28px; height: 28px; border-radius: 8px; color: #155724; box-shadow: 0 2px 6px rgba(120,255,214,0.4);">
-                                                <i class="bi bi-lightning-charge-fill" style="font-size: 0.85rem;"></i>
-                                            </span>
-                                        @else
-                                            <span class="badge"
-                                                style="background-color: #fce8e6; color: #c5221f; font-weight: 500; font-size: 0.75rem; padding: 6px 12px; border-radius: 6px;">
-                                                ไม่ว่าง/ปิดปรับปรุง
-                                            </span>
-                                            <span class="d-inline-flex align-items-center justify-content-center"
-                                                style="background: #e0e0e0; width: 28px; height: 28px; border-radius: 8px; color: #6c757d;">
-                                                <i class="bi bi-lightning-fill" style="font-size: 0.85rem;"></i>
-                                            </span>
-                                        @endif
 
-                                        <span class="text-muted small ms-auto fw-medium" style="font-size: 0.8rem;">
-                                            🔌 ว่าง {{ $available }}/{{ $total }}
-                                        </span>
-                                    </div>
 
                                 </div>
                             </a>
@@ -140,18 +113,10 @@
         }).addTo(map);
 
         function getIcon(station) {
-            const connectors = station.connectors;
-            const hasAvailable = connectors.some(c => c.status === 'available');
-            const allMaintenance = connectors.every(c => c.status === 'maintenance');
-
-            let color = 'green';
-            if (allMaintenance) color = 'red';
-            else if (!hasAvailable) color = 'orange';
-
             return L.divIcon({
                 className: '',
                 html: `<div style="
-                background:${color};
+                background:#4285F4;
                 width:16px; height:16px;
                 border-radius:50%;
                 border:2px solid white;
@@ -162,23 +127,21 @@
             });
         }
 
+
         stations.forEach(station => {
             const marker = L.marker([station.lat, station.lng], {
                 icon: getIcon(station)
             }).addTo(map);
 
-            const available = station.connectors.filter(c => c.status === 'available').length;
-            const total = station.connectors.length;
-
             marker.bindPopup(`
             <div style="min-width:200px">
                 <strong>${station.name}</strong><br>
                 <small class="text-muted">${station.address}</small><br><br>
-                <span>🔌 หัวชาร์จว่าง: ${available}/${total}</span><br>
                 <span>🕐 ${station.open_time ?? '-'} - ${station.close_time ?? '-'}</span><br><br>
                 <a href="/station/${station.id}" class="btn btn-sm btn-primary w-100">ดูรายละเอียด</a>
             </div>
         `);
+
         });
 
         function calculateDistance(lat1, lon1, lat2, lon2) {
