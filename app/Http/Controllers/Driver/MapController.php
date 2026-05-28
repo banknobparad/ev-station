@@ -31,6 +31,9 @@ class MapController extends Controller
 
         $station->setRelation('reviews', $stationReviews);
 
+        // จำนวนรีวิวทั้งหมด (ใช้ใน view เพื่อแสดงจำนวน/ปุ่ม View All)
+        $totalReviews = $station->reviews()->count();
+
         $reviewImages = Review::where('station_id', $station->id)
             ->whereNotNull('images')
             ->pluck('images')
@@ -39,6 +42,7 @@ class MapController extends Controller
             ->values()
             ->all();
 
+
         $myReview = null;
         if (auth()->check()) {
             $myReview = Review::where('station_id', $station->id)
@@ -46,6 +50,6 @@ class MapController extends Controller
                 ->first();
         }
 
-        return view('driver.station', compact('station', 'reviewImages', 'showAllReviews', 'myReview'));
+        return view('driver.station', compact('station', 'reviewImages', 'showAllReviews', 'myReview', 'totalReviews'));
     }
 }
