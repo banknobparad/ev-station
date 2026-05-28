@@ -81,6 +81,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">รูปภาพเพิ่มเติม</label>
+                    <input type="file" name="gallery_images[]" class="form-control" accept="image/*" multiple>
+                    <div class="form-text">สามารถเลือกได้หลายไฟล์ เพื่อให้แสดงในแกลเลอรีของสถานี</div>
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">สิ่งอำนวยความสะดวก</label>
                     <div class="row">
                         @foreach($facilities as $facility)

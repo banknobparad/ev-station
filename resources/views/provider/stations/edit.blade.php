@@ -54,6 +54,19 @@
         </div>
 
         <div class="mb-3">
+            <label class="form-label">รูปภาพเพิ่มเติม</label>
+            @if(!empty($station->gallery_images))
+                <div class="mb-2 d-flex flex-wrap gap-2">
+                    @foreach($station->gallery_images as $galleryImage)
+                        <img src="{{ asset('storage/' . $galleryImage) }}" width="100" class="rounded">
+                    @endforeach
+                </div>
+            @endif
+            <input type="file" name="gallery_images[]" class="form-control" accept="image/*" multiple>
+            <div class="form-text">เพิ่มรูปภาพเพิ่มเติมสำหรับแกลเลอรีสถานี</div>
+        </div>
+
+        <div class="mb-3">
             <label class="form-label">สิ่งอำนวยความสะดวก</label>
             <div class="row">
                 @foreach($facilities as $facility)

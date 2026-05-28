@@ -51,6 +51,38 @@
         </div>
     </div>
 
+    @php
+        $galleryImages = collect($reviewImages ?? [])
+            ->merge($station->gallery_images ?? [])
+            ->filter()
+            ->unique()
+            ->values();
+        $galleryCount = $galleryImages->count();
+    @endphp
+
+    @if($galleryCount > 0)
+    <div class="card mb-4">
+        <div class="card-header"><strong>📷 แกลเลอรีรูปภาพ</strong></div>
+        <div class="card-body">
+            <div class="row g-2">
+                @foreach($galleryImages->take(3) as $index => $image)
+                <div class="col-4 position-relative">
+                    <a href="{{ asset('storage/' . $image) }}" target="_blank">
+                        <img src="{{ asset('storage/' . $image) }}" class="rounded w-100" style="height:120px; object-fit:cover;">
+                        @if($index === 2 && $galleryCount > 3)
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                             style="background: rgba(0,0,0,.45); color:#fff; font-size:1.2rem;">
+                            +{{ $galleryCount - 3 }}
+                        </div>
+                        @endif
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- สิ่งอำนวยความสะดวก --}}
     @if($station->facilities->count() > 0)
     <div class="card mb-4">
@@ -101,14 +133,14 @@
 
     {{-- ฟอร์มรีวิว --}}
     @php
-        $myReview = $station->reviews->where('user_id', auth()->id())->first();
+        $myReview = $myReview ?? null;
     @endphp
 
     @if(!$myReview)
     <div class="card mb-4">
         <div class="card-header"><strong>✍️ เขียนรีวิว</strong></div>
         <div class="card-body">
-            <form action="{{ route('driver.review.store', $station) }}" method="POST">
+            <form action="{{ route('driver.review.store', $station) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
                     <label class="form-label">คะแนน</label>
@@ -125,6 +157,10 @@
                     <label class="form-label">คอมเมนต์</label>
                     <textarea name="comment" class="form-control" rows="3" placeholder="เช่น หัวชาร์จ CCS2 ว่างครับ ชาร์จเร็วดี"></textarea>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">แนบรูปภาพ (ถ้ามี)</label>
+                    <input type="file" name="images[]" class="form-control" accept="image/*" multiple>
+                </div>
                 <button type="submit" class="btn btn-success">ส่งรีวิว</button>
             </form>
         </div>
@@ -133,7 +169,12 @@
 
     {{-- รายการรีวิว --}}
     <div class="card">
-        <div class="card-header"><strong>⭐ รีวิวทั้งหมด ({{ $station->reviews->count() }})</strong></div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>⭐ รีวิวทั้งหมด ({{ $totalReviews }})</strong>
+            @if(!$showAllReviews && $totalReviews > 5)
+                <a href="{{ route('driver.station', ['station' => $station, 'view' => 'all']) }}" class="btn btn-sm btn-outline-primary">ดูทั้งหมด</a>
+            @endif
+        </div>
         <div class="card-body">
             @forelse($station->reviews as $review)
             <div class="border-bottom pb-2 mb-2">
@@ -155,6 +196,15 @@
                     @endif
                 </div>
                 <p class="mb-0 mt-1">{{ $review->comment }}</p>
+                @if(!empty($review->images))
+                    <div class="mt-2 d-flex flex-wrap gap-2">
+                        @foreach($review->images as $reviewImage)
+                            <a href="{{ asset('storage/' . $reviewImage) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $reviewImage) }}" class="rounded" style="width:84px; height:84px; object-fit:cover;">
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
                 <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
             </div>
             @empty

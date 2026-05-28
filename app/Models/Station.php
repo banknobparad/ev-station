@@ -13,11 +13,15 @@ class Station extends Model
         'lat',
         'lng',
         'image',
+        'gallery_images',
         'open_time',
         'close_time',
         'approval_status',
     ];
 
+    protected $casts = [
+        'gallery_images' => 'array',
+    ];
 
     public function user()
     {

@@ -15,6 +15,8 @@ class ReviewController extends Controller
         $request->validate([
             'star'    => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:500',
+            'images'  => 'nullable|array',
+            'images.*' => 'nullable|image|max:10240',
         ]);
 
         // กันรีวิวซ้ำ
@@ -26,11 +28,19 @@ class ReviewController extends Controller
             return back()->with('error', 'คุณรีวิวสถานีนี้ไปแล้วครับ');
         }
 
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imagePaths[] = $this->compressAndStoreImage($image, 'reviews');
+            }
+        }
+
         Review::create([
             'user_id'    => Auth::id(),
             'station_id' => $station->id,
             'star'       => $request->star,
             'comment'    => $request->comment,
+            'images'     => $imagePaths,
         ]);
 
         return back()->with('success', 'รีวิวสำเร็จแล้วครับ ขอบคุณ!');
@@ -42,4 +52,26 @@ class ReviewController extends Controller
         $review->delete();
         return back()->with('success', 'ลบรีวิวสำเร็จแล้วครับ');
     }
+    public function edit(Review $review)
+{
+    if ($review->user_id !== Auth::id()) abort(403);
+    return response()->json($review); // ส่งข้อมูลให้ modal
+}
+
+public function update(Request $request, Review $review)
+{
+    if ($review->user_id !== Auth::id()) abort(403);
+
+    $request->validate([
+        'star'    => 'required|integer|min:1|max:5',
+        'comment' => 'nullable|string|max:500',
+    ]);
+
+    $review->update([
+        'star'    => $request->star,
+        'comment' => $request->comment,
+    ]);
+
+    return redirect()->route('driver.account')->with('success', 'แก้ไขรีวิวเรียบร้อยแล้ว');
+}
 }

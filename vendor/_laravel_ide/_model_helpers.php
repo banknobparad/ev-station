@@ -998,6 +998,7 @@ namespace App\Models {
      *
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
+     * @property array|null $images
      * @property string|null $comment
      * @property mixed $star
      * @property mixed $station_id
@@ -1010,6 +1011,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Review>|Review whereStationId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Review>|Review whereStar($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Review>|Review whereComment($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Review>|Review whereImages($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Review>|Review whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Review>|Review whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Review>|Review newModelQuery()
@@ -1337,6 +1339,7 @@ namespace App\Models {
      * @property mixed $status
      * @property string|null $close_time
      * @property string|null $open_time
+     * @property array|null $gallery_images
      * @property string|null $image
      * @property float $lng
      * @property float $lat
@@ -1360,6 +1363,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereLat($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereLng($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereImage($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereGalleryImages($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereOpenTime($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereCloseTime($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Station>|Station whereStatus($value)

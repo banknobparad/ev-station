@@ -10,7 +10,12 @@ class Review extends Model
         'user_id',
         'station_id',
         'star',
-        'comment'
+        'comment',
+        'images',
+    ];
+
+    protected $casts = [
+        'images' => 'array',
     ];
 
     public function user()

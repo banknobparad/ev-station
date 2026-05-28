@@ -18,20 +18,29 @@ class StationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'       => 'required|string|max:255',
-            'address'    => 'required|string',
-            'lat'        => 'required|numeric',
-            'lng'        => 'required|numeric',
-            'open_time'  => 'nullable',
-            'close_time' => 'nullable',
-            'image'      => 'nullable|image|max:2048',
-            'facilities' => 'nullable|array',
-            'facilities.*' => 'integer|exists:facilities,id',
+            'name'           => 'required|string|max:255',
+            'address'        => 'required|string',
+            'lat'            => 'required|numeric',
+            'lng'            => 'required|numeric',
+            'open_time'      => 'nullable',
+            'close_time'     => 'nullable',
+            'image'          => 'nullable|image|max:10240',
+            'gallery_images' => 'nullable|array',
+            'gallery_images.*' => 'nullable|image|max:10240',
+            'facilities'     => 'nullable|array',
+            'facilities.*'   => 'integer|exists:facilities,id',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('stations', 'public');
+            $imagePath = $this->compressAndStoreImage($request->file('image'), 'stations');
+        }
+
+        $galleryImages = [];
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $galleryImage) {
+                $galleryImages[] = $this->compressAndStoreImage($galleryImage, 'stations');
+            }
         }
 
         $station = Station::create([
@@ -43,7 +52,8 @@ class StationController extends Controller
             'open_time'         => $request->open_time,
             'close_time'        => $request->close_time,
             'image'             => $imagePath,
-            'approval_status'  => 'pending',
+            'gallery_images'    => $galleryImages,
+            'approval_status'   => 'pending',
         ]);
 
         if ($request->has('facilities') && is_array($request->facilities)) {
