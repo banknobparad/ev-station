@@ -43,6 +43,8 @@ Route::middleware(['auth', 'role:driver'])->group(function () {
     Route::delete('/review/{review}', [App\Http\Controllers\Driver\ReviewController::class, 'destroy'])->name('driver.review.destroy');
     Route::post('/station/{station}/favorite', [App\Http\Controllers\Driver\FavoriteController::class, 'toggle'])->name('driver.favorite.toggle');
     Route::get('/favorites', [App\Http\Controllers\Driver\FavoriteController::class, 'index'])->name('driver.favorites');
+    Route::get('/review/{review}/edit', [App\Http\Controllers\Driver\ReviewController::class, 'edit'])->name('driver.review.edit');
+    Route::put('/review/{review}', [App\Http\Controllers\Driver\ReviewController::class, 'update'])->name('driver.review.update');
 });
 
 // ===== Provider =====

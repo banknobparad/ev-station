@@ -14,8 +14,10 @@ class AccountController extends Controller
         $reviewCount = $user->reviews()->count();
         $visitedCount = $user->reviews()->select('station_id')->distinct()->count();
         $recentComments = $user->reviews()->with('station')->latest()->limit(5)->get();
+        $myStations = $user->stations()->latest()->get(); // เพิ่ม
 
-        return view('driver.account', compact('user', 'reviewCount', 'visitedCount', 'recentComments'));
+
+        return view('driver.account', compact('user', 'reviewCount', 'visitedCount', 'recentComments', 'myStations'));
     }
 
     public function update(Request $request)

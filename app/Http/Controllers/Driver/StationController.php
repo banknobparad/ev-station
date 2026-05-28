@@ -11,7 +11,8 @@ class StationController extends Controller
 {
     public function create()
     {
-        return view('driver.stations.create');
+        $facilities = \App\Models\Facility::all();
+        return view('driver.stations.create', compact('facilities'));
     }
 
     public function store(Request $request)
@@ -24,6 +25,8 @@ class StationController extends Controller
             'open_time'  => 'nullable',
             'close_time' => 'nullable',
             'image'      => 'nullable|image|max:2048',
+            'facilities' => 'nullable|array',
+            'facilities.*' => 'integer|exists:facilities,id',
         ]);
 
         $imagePath = null;
@@ -31,7 +34,7 @@ class StationController extends Controller
             $imagePath = $request->file('image')->store('stations', 'public');
         }
 
-        Station::create([
+        $station = Station::create([
             'user_id'           => Auth::id(),
             'name'              => $request->name,
             'address'           => $request->address,
@@ -42,6 +45,10 @@ class StationController extends Controller
             'image'             => $imagePath,
             'approval_status'  => 'pending',
         ]);
+
+        if ($request->has('facilities') && is_array($request->facilities)) {
+            $station->facilities()->sync($request->facilities);
+        }
 
         return redirect()->route('driver.account')
             ->with('success', 'ส่งคำขอเพิ่มสถานีแล้ว รอ Admin อนุมัติครับ');

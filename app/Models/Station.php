@@ -38,4 +38,9 @@ class Station extends Model
     {
         return $this->hasMany(Favorite::class);
     }
+
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class, 'station_facility');
+    }
 }

@@ -80,6 +80,23 @@
                     <input type="file" name="image" class="form-control" accept="image/*">
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">สิ่งอำนวยความสะดวก</label>
+                    <div class="row">
+                        @foreach($facilities as $facility)
+                            <div class="col-md-6 col-lg-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="facilities[]"
+                                           value="{{ $facility->id }}" id="facility_{{ $facility->id }}">
+                                    <label class="form-check-label" for="facility_{{ $facility->id }}">
+                                        {{ $facility->name }}
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="driver-form-actions">
                     <button type="submit" class="btn btn-primary w-100 driver-submit-btn">
                         <i class="bi bi-send me-2"></i>ส่งคำขอ

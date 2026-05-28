@@ -11,8 +11,9 @@
                     <i class="bi bi-search"></i>
                     <input type="text" id="search" placeholder="ค้นหาสถานีหรือสถานที่..." autocomplete="off">
                 </div>
-                <button type="button" class="icon-btn" id="btn-open-trip" aria-label="Trip">
-                    <i class="bi bi-signpost-2-fill" style="color: var(--ev-green);"></i>
+                <button type="button" class="icon-btn" onclick="window.location.href='{{ route('driver.favorites') }}'"
+                    aria-label="Favorites">
+                    <i class="bi bi-heart-fill"></i>
                 </button>
             </div>
 
@@ -20,7 +21,7 @@
         </div>
 
         <div class="floating-actions" aria-hidden="false">
-            <button type="button" class="sheet-icon-btn" aria-label="Info">
+            <button type="button" class="sheet-icon-btn" id="btn-open-trip" aria-label="Info">
                 <i class="bi bi-info-circle"></i>
             </button>
             <button type="button" class="sheet-icon-btn mt-2" onclick="goToMyLocation()" aria-label="Locate me">
@@ -40,15 +41,6 @@
                 </a>
             </div>
 
-            <div class="d-flex align-items-center justify-content-between bg-light rounded-3 p-1 mb-2" style="font-size: 0.85rem;">
-                <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 py-1"
-                    onclick="window.location.reload();">
-                    <i class="bi bi-arrow-clockwise"></i> อัพเดทข้อมูล
-                </button>
-                <div class="text-muted">
-                    ข้อมูลล่าสุด ณ {{ now()->format('H:i') }} น.
-                </div>
-            </div>
 
             <div class="sheet-scroll" style="overflow-y: auto; flex-grow: 1; -webkit-overflow-scrolling: touch;">
                 <div class="row g-2" id="station-list-container">
@@ -79,7 +71,8 @@
                                             {{ $station->open_time && $station->close_time && $station->open_time !== $station->close_time ? \Carbon\Carbon::parse($station->open_time)->format('H:i') . ' - ' . \Carbon\Carbon::parse($station->close_time)->format('H:i') : '24 ชั่วโมง' }}
                                         </span> <span class="text-secondary">|</span>
 
-                                        <span class="station-distance" data-lat="{{ $station->lat }}" data-lng="{{ $station->lng }}">
+                                        <span class="station-distance" data-lat="{{ $station->lat }}"
+                                            data-lng="{{ $station->lng }}">
                                             <i class="bi bi-geo-alt"></i> กำลังคำนวณ...
                                         </span>
                                     </div>
@@ -170,7 +163,8 @@
                 </div>
 
                 <div class="modal-footer trip-modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-secondary flex-shrink-0" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-secondary flex-shrink-0"
+                        data-bs-dismiss="modal">ยกเลิก</button>
                     <button type="button" id="btn-find-route" class="trip-find-btn flex-grow-1">
                         <i class="bi bi-signpost-2-fill me-2"></i>
                         ค้นหาเส้นทาง
@@ -189,7 +183,7 @@
             border: none;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
         }
 
         .trip-modal-header {
@@ -208,12 +202,16 @@
         }
 
         .trip-icon-badge {
-            width: 42px; height: 42px;
+            width: 42px;
+            height: 42px;
             background: var(--ev-green);
             border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 1.1rem;
-            box-shadow: 0 4px 12px rgba(45,198,83,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(45, 198, 83, 0.35);
         }
 
         .trip-field-label {
@@ -229,13 +227,21 @@
         }
 
         .trip-dot {
-            width: 10px; height: 10px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             flex-shrink: 0;
         }
 
-        .trip-dot-origin { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
-        .trip-dot-dest   { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
+        .trip-dot-origin {
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        .trip-dot-dest {
+            background: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
 
         .trip-input-wrap {
             position: relative;
@@ -247,7 +253,9 @@
             border: 1.5px solid #bbf7d0;
             border-radius: 12px;
             padding: 0.6rem 1rem;
-            display: flex; align-items: center; gap: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-size: 0.88rem;
             font-weight: 600;
             color: #166534;
@@ -268,9 +276,12 @@
         }
 
         .trip-divider-or {
-            display: flex; align-items: center; gap: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             margin: 0.5rem 0;
-            color: #9ca3af; font-size: 0.75rem;
+            color: #9ca3af;
+            font-size: 0.75rem;
         }
 
         .trip-divider-or::before,
@@ -296,23 +307,26 @@
         .trip-text-input:focus {
             border-color: var(--ev-green);
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(45,198,83,0.12);
+            box-shadow: 0 0 0 3px rgba(45, 198, 83, 0.12);
         }
 
         .trip-autocomplete {
             position: absolute;
-            left: 0; right: 0;
+            left: 0;
+            right: 0;
             background: #fff;
             border: 1px solid #e5e9ef;
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             z-index: 9999;
             overflow: hidden;
             display: none;
             margin-top: 4px;
         }
 
-        .trip-autocomplete.show { display: block; }
+        .trip-autocomplete.show {
+            display: block;
+        }
 
         .trip-autocomplete-item {
             padding: 0.65rem 1rem;
@@ -320,11 +334,19 @@
             font-size: 0.85rem;
             border-bottom: 1px solid #f3f4f6;
             transition: background 0.15s;
-            display: flex; align-items: center; gap: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .trip-autocomplete-item:last-child { border-bottom: none; }
-        .trip-autocomplete-item:hover { background: #f0fdf4; color: #166534; }
+        .trip-autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .trip-autocomplete-item:hover {
+            background: #f0fdf4;
+            color: #166534;
+        }
 
         .trip-arrow-connector {
             display: flex;
@@ -335,13 +357,22 @@
             color: #d1d5db;
         }
 
-        .trip-connector-line { flex: 1; height: 1px; background: #e5e7eb; }
+        .trip-connector-line {
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
         .trip-connector-icon {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: #f3f4f6;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #9ca3af;
         }
 
         .trip-radius-btn {
@@ -361,7 +392,7 @@
             background: var(--ev-green);
             border-color: var(--ev-green);
             color: white;
-            box-shadow: 0 2px 8px rgba(45,198,83,0.3);
+            box-shadow: 0 2px 8px rgba(45, 198, 83, 0.3);
         }
 
         .trip-info-box {
@@ -371,7 +402,9 @@
             padding: 0.65rem 0.85rem;
             font-size: 0.8rem;
             color: #1e40af;
-            display: flex; align-items: flex-start; gap: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
             line-height: 1.5;
         }
 
@@ -385,42 +418,56 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .trip-find-btn:hover {
             background: var(--ev-green-dark);
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(45,198,83,0.35);
+            box-shadow: 0 6px 20px rgba(45, 198, 83, 0.35);
         }
 
         .trip-find-btn:disabled {
-            background: #d1d5db; cursor: not-allowed; transform: none; box-shadow: none;
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         /* Route active banner */
         .route-active-banner {
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             background: linear-gradient(135deg, var(--ev-green), #16a34a);
             color: white;
             padding: 0.55rem 1rem;
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             z-index: 2000;
             font-size: 0.82rem;
             font-weight: 600;
-            box-shadow: 0 2px 12px rgba(45,198,83,0.4);
+            box-shadow: 0 2px 12px rgba(45, 198, 83, 0.4);
             transform: translateY(-100%);
             transition: transform 0.3s ease;
         }
 
-        .route-active-banner.show { transform: translateY(0); }
+        .route-active-banner.show {
+            transform: translateY(0);
+        }
 
         .route-banner-clear {
-            background: rgba(255,255,255,0.25);
-            border: none; border-radius: 8px;
-            color: white; padding: 0.25rem 0.65rem;
-            font-size: 0.75rem; font-weight: 600;
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 600;
             cursor: pointer;
         }
 
@@ -440,29 +487,32 @@
             background: #fff;
             border-radius: 16px;
             border: 1.5px solid #d1fae5 !important;
-            box-shadow: 0 2px 8px rgba(34,197,94,0.07) !important;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.07) !important;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
+
         .route-station-card:hover {
             border-color: #6ee7b7 !important;
-            box-shadow: 0 4px 16px rgba(34,197,94,0.14) !important;
+            box-shadow: 0 4px 16px rgba(34, 197, 94, 0.14) !important;
         }
 
         /* Sequence badge on card */
         .station-seq-badge {
             position: absolute;
-            top: -6px; left: -6px;
+            top: -6px;
+            left: -6px;
             background: #22c55e;
             color: white;
             border-radius: 50%;
-            width: 18px; height: 18px;
+            width: 18px;
+            height: 18px;
             font-size: 10px;
             font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 2px solid white;
-            box-shadow: 0 1px 4px rgba(34,197,94,0.4);
+            box-shadow: 0 1px 4px rgba(34, 197, 94, 0.4);
         }
     </style>
 
@@ -523,7 +573,9 @@
 
         // Add all station markers initially
         stations.forEach(station => {
-            const marker = L.marker([station.lat, station.lng], { icon: getIcon(station) }).addTo(map);
+            const marker = L.marker([station.lat, station.lng], {
+                icon: getIcon(station)
+            }).addTo(map);
             marker.bindPopup(`
                 <div style="min-width:200px">
                     <strong>${station.name}</strong><br>
@@ -540,8 +592,9 @@
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(
+                dLon / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
 
         function updateAllStationDistancesAndSort(userLat, userLng) {
@@ -554,7 +607,8 @@
                     const km = calculateDistance(userLat, userLng, sLat, sLng);
                     if (wrapper) wrapper.setAttribute('data-distance', km);
                     let distanceText = km < 1 ? `≈ ${Math.round(km*1000)} ม.` : `≈ ${km.toFixed(1)} กม.`;
-                    let timeText = km < 1 ? `(${Math.max(1, Math.round(km*1000/300))} นาที)` : `(${Math.round(km*2)} นาที)`;
+                    let timeText = km < 1 ? `(${Math.max(1, Math.round(km*1000/300))} นาที)` :
+                        `(${Math.round(km*2)} นาที)`;
                     el.innerHTML = `<i class="bi bi-geo-alt"></i> ${distanceText} ${timeText}`;
                 }
             });
@@ -564,7 +618,8 @@
             items.forEach(item => container.appendChild(item));
         }
 
-        let userLat = null, userLng = null;
+        let userLat = null,
+            userLng = null;
         let userMarker = null;
 
         function goToMyLocation() {
@@ -578,7 +633,8 @@
                     icon: L.divIcon({
                         className: '',
                         html: `<div style="background:#4285F4;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 0 6px rgba(0,0,0,0.4)"></div>`,
-                        iconSize: [16, 16], iconAnchor: [8, 8],
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8],
                     })
                 }).addTo(map).bindPopup('คุณอยู่ที่นี่').openPopup();
                 updateAllStationDistancesAndSort(userLat, userLng);
@@ -590,10 +646,15 @@
         document.getElementById('search').addEventListener('input', function() {
             clearTimeout(searchTimeout);
             const query = this.value.trim();
-            if (query.length < 3) { document.getElementById('search-results').innerHTML = ''; return; }
+            if (query.length < 3) {
+                document.getElementById('search-results').innerHTML = '';
+                return;
+            }
             searchTimeout = setTimeout(() => {
                 fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=th&accept-language=th`, {
-                    headers: { 'User-Agent': 'ev-station-app' }
+                    headers: {
+                        'User-Agent': 'ev-station-app'
+                    }
                 }).then(res => res.json()).then(results => {
                     const container = document.getElementById('search-results');
                     container.innerHTML = '';
@@ -603,8 +664,10 @@
                         btn.className = 'list-group-item list-group-item-action';
                         btn.textContent = item.display_name;
                         btn.addEventListener('click', () => {
-                            map.setView([parseFloat(item.lat), parseFloat(item.lon)], 15);
-                            document.getElementById('search').value = item.display_name;
+                            map.setView([parseFloat(item.lat), parseFloat(item
+                                .lon)], 15);
+                            document.getElementById('search').value = item
+                                .display_name;
                             container.innerHTML = '';
                         });
                         container.appendChild(btn);
@@ -632,12 +695,19 @@
 
         // GPS button
         document.getElementById('btn-use-gps').addEventListener('click', function() {
-            if (!navigator.geolocation) { alert('เบราว์เซอร์ไม่รองรับ GPS ครับ'); return; }
+            if (!navigator.geolocation) {
+                alert('เบราว์เซอร์ไม่รองรับ GPS ครับ');
+                return;
+            }
             this.innerHTML = '<i class="bi bi-arrow-repeat spin-icon"></i> <span>กำลังดึงตำแหน่ง...</span>';
             navigator.geolocation.getCurrentPosition(pos => {
                 userLat = pos.coords.latitude;
                 userLng = pos.coords.longitude;
-                originCoords = { lat: userLat, lng: userLng, name: 'ตำแหน่งปัจจุบันของคุณ' };
+                originCoords = {
+                    lat: userLat,
+                    lng: userLng,
+                    name: 'ตำแหน่งปัจจุบันของคุณ'
+                };
                 gpsActive = true;
                 this.innerHTML = `<i class="bi bi-geo-alt-fill"></i> <span>📍 ${originCoords.name}</span>`;
                 this.classList.add('active');
@@ -657,20 +727,34 @@
             input.addEventListener('input', function() {
                 clearTimeout(t);
                 const q = this.value.trim();
-                if (q.length < 2) { results.classList.remove('show'); results.innerHTML = ''; return; }
+                if (q.length < 2) {
+                    results.classList.remove('show');
+                    results.innerHTML = '';
+                    return;
+                }
                 t = setTimeout(() => {
                     fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&countrycodes=th&accept-language=th`, {
-                        headers: { 'User-Agent': 'ev-station-app' }
+                        headers: {
+                            'User-Agent': 'ev-station-app'
+                        }
                     }).then(r => r.json()).then(data => {
                         results.innerHTML = '';
-                        if (!data.length) { results.classList.remove('show'); return; }
+                        if (!data.length) {
+                            results.classList.remove('show');
+                            return;
+                        }
                         data.forEach(item => {
                             const div = document.createElement('div');
                             div.className = 'trip-autocomplete-item';
-                            div.innerHTML = `<i class="bi bi-geo-alt text-muted"></i> <span>${item.display_name.substring(0,60)}${item.display_name.length>60?'...':''}</span>`;
+                            div.innerHTML =
+                                `<i class="bi bi-geo-alt text-muted"></i> <span>${item.display_name.substring(0,60)}${item.display_name.length>60?'...':''}</span>`;
                             div.addEventListener('click', () => {
-                                onSelect({ lat: parseFloat(item.lat), lng: parseFloat(item.lon), name: item.display_name });
-                                input.value = item.display_name.substring(0,60);
+                                onSelect({
+                                    lat: parseFloat(item.lat),
+                                    lng: parseFloat(item.lon),
+                                    name: item.display_name
+                                });
+                                input.value = item.display_name.substring(0, 60);
                                 results.classList.remove('show');
                                 results.innerHTML = '';
                             });
@@ -691,7 +775,8 @@
             originCoords = coords;
             gpsActive = false;
             document.getElementById('btn-use-gps').classList.remove('active');
-            document.getElementById('btn-use-gps').innerHTML = '<i class="bi bi-geo-alt-fill"></i> <span>ใช้ตำแหน่งปัจจุบัน</span>';
+            document.getElementById('btn-use-gps').innerHTML =
+                '<i class="bi bi-geo-alt-fill"></i> <span>ใช้ตำแหน่งปัจจุบัน</span>';
         });
 
         setupAutocomplete('dest-input', 'dest-results', (coords) => {
@@ -704,6 +789,10 @@
             modal.show();
         });
 
+        document.getElementById('tripModal').addEventListener('hide.bs.modal', function() {
+            document.activeElement?.blur();
+        });
+
         // ===== ROUTE DRAWING =====
         let routeLayer = null;
         let routeStationMarkers = [];
@@ -711,10 +800,11 @@
         // Point-to-segment distance (km)
         function distancePointToSegment(lat, lng, lat1, lng1, lat2, lng2) {
             const R = 6371;
-            const dx = lat2 - lat1, dy = lng2 - lng1;
+            const dx = lat2 - lat1,
+                dy = lng2 - lng1;
             if (dx === 0 && dy === 0) return calculateDistance(lat, lng, lat1, lng1);
-            const t = Math.max(0, Math.min(1, ((lat - lat1)*dx + (lng - lng1)*dy) / (dx*dx + dy*dy)));
-            return calculateDistance(lat, lng, lat1 + t*dx, lng1 + t*dy);
+            const t = Math.max(0, Math.min(1, ((lat - lat1) * dx + (lng - lng1) * dy) / (dx * dx + dy * dy)));
+            return calculateDistance(lat, lng, lat1 + t * dx, lng1 + t * dy);
         }
 
         function findStationsNearRoute(routePoints, radiusKm) {
@@ -723,7 +813,7 @@
                     const d = distancePointToSegment(
                         station.lat, station.lng,
                         routePoints[i][0], routePoints[i][1],
-                        routePoints[i+1][0], routePoints[i+1][1]
+                        routePoints[i + 1][0], routePoints[i + 1][1]
                     );
                     if (d <= radiusKm) return true;
                 }
@@ -733,14 +823,15 @@
 
         // ===== PROJECT station onto route → get "progress" t (0.0–1.0) =====
         function projectOnRoute(station, routePoints) {
-            let bestT = 0, bestDist = Infinity;
+            let bestT = 0,
+                bestDist = Infinity;
             const segLens = [];
             let totalLen = 0;
 
             for (let i = 0; i < routePoints.length - 1; i++) {
                 const d = calculateDistance(
                     routePoints[i][0], routePoints[i][1],
-                    routePoints[i+1][0], routePoints[i+1][1]
+                    routePoints[i + 1][0], routePoints[i + 1][1]
                 );
                 segLens.push(d);
                 totalLen += d;
@@ -749,11 +840,12 @@
             let walked = 0;
             for (let i = 0; i < routePoints.length - 1; i++) {
                 const [lat1, lng1] = routePoints[i];
-                const [lat2, lng2] = routePoints[i+1];
-                const dx = lat2 - lat1, dy = lng2 - lng1;
-                const lenSq = dx*dx + dy*dy;
+                const [lat2, lng2] = routePoints[i + 1];
+                const dx = lat2 - lat1,
+                    dy = lng2 - lng1;
+                const lenSq = dx * dx + dy * dy;
                 const tSeg = lenSq === 0 ? 0 : Math.max(0, Math.min(1,
-                    ((station.lat - lat1)*dx + (station.lng - lng1)*dy) / lenSq
+                    ((station.lat - lat1) * dx + (station.lng - lng1) * dy) / lenSq
                 ));
                 const projLat = lat1 + tSeg * dx;
                 const projLng = lng1 + tSeg * dy;
@@ -781,21 +873,22 @@
             let cardsHTML = '';
             sortedStations.forEach((station, idx) => {
                 const km = calculateDistance(driverLat, driverLng, station.lat, station.lng);
-                const distText = km < 1
-                    ? `≈ ${Math.round(km * 1000)} ม.`
-                    : `≈ ${km.toFixed(1)} กม.`;
-                const timeText = km < 1
-                    ? `(${Math.max(1, Math.round(km * 1000 / 300))} นาที)`
-                    : `(${Math.round(km * 2)} นาที)`;
-                const openLabel = station.open_time && station.close_time && station.open_time !== station.close_time
-                    ? `${station.open_time.substring(0, 5)} - ${station.close_time.substring(0, 5)}`
-                    : '24 ชั่วโมง';
-                const imgSrc = station.image
-                    ? `/storage/${station.image}`
-                    : 'https://placehold.co/60x60?text=EV';
-                const addressShort = station.address.length > 50
-                    ? station.address.substring(0, 50) + '...'
-                    : station.address;
+                const distText = km < 1 ?
+                    `≈ ${Math.round(km * 1000)} ม.` :
+                    `≈ ${km.toFixed(1)} กม.`;
+                const timeText = km < 1 ?
+                    `(${Math.max(1, Math.round(km * 1000 / 300))} นาที)` :
+                    `(${Math.round(km * 2)} นาที)`;
+                const openLabel = station.open_time && station.close_time && station.open_time !== station
+                    .close_time ?
+                    `${station.open_time.substring(0, 5)} - ${station.close_time.substring(0, 5)}` :
+                    '24 ชั่วโมง';
+                const imgSrc = station.image ?
+                    `/storage/${station.image}` :
+                    'https://placehold.co/60x60?text=EV';
+                const addressShort = station.address.length > 50 ?
+                    station.address.substring(0, 50) + '...' :
+                    station.address;
 
                 cardsHTML += `
                 <div class="col-12">
@@ -861,18 +954,29 @@
         }
 
         function clearRoute() {
-            if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+                routeLayer = null;
+            }
             routeStationMarkers.forEach(m => map.removeLayer(m));
             routeStationMarkers = [];
             // Restore all station markers
-            stationMarkers.forEach(m => { if (!map.hasLayer(m)) m.addTo(map); });
+            stationMarkers.forEach(m => {
+                if (!map.hasLayer(m)) m.addTo(map);
+            });
             document.getElementById('route-banner').classList.remove('show');
             resetSheet();
         }
 
         document.getElementById('btn-find-route').addEventListener('click', async function() {
-            if (!originCoords && !gpsActive) { alert('กรุณาระบุต้นทางครับ'); return; }
-            if (!destCoords) { alert('กรุณาระบุปลายทางครับ'); return; }
+            if (!originCoords && !gpsActive) {
+                alert('กรุณาระบุต้นทางครับ');
+                return;
+            }
+            if (!destCoords) {
+                alert('กรุณาระบุปลายทางครับ');
+                return;
+            }
 
             this.disabled = true;
             this.innerHTML = '<i class="bi bi-arrow-repeat spin-icon me-2"></i>กำลังค้นหา...';
@@ -880,7 +984,8 @@
             try {
                 const origin = originCoords;
                 const dest = destCoords;
-                const url = `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${dest.lng},${dest.lat}?overview=full&geometries=geojson`;
+                const url =
+                    `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${dest.lng},${dest.lat}?overview=full&geometries=geojson`;
 
                 const res = await fetch(url);
                 const data = await res.json();
@@ -908,25 +1013,33 @@
                 }).addTo(map);
 
                 // Fit map to route
-                map.fitBounds(routeLayer.getBounds(), { padding: [60, 60] });
+                map.fitBounds(routeLayer.getBounds(), {
+                    padding: [60, 60]
+                });
 
                 // Origin marker (A)
                 const originIcon = L.divIcon({
                     className: '',
                     html: `<div style="background:#1d4ed8;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 0 8px rgba(29,78,216,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;color:white">A</div>`,
-                    iconSize: [20,20], iconAnchor: [10,10]
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
                 });
                 // Destination marker (B)
                 const destIcon = L.divIcon({
                     className: '',
                     html: `<div style="background:#dc2626;width:20px;height:20px;border-radius:50%;border:3px solid white;box-shadow:0 0 8px rgba(220,38,38,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;color:white">B</div>`,
-                    iconSize: [20,20], iconAnchor: [10,10]
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
                 });
 
-                const originMarker = L.marker([origin.lat, origin.lng], { icon: originIcon })
+                const originMarker = L.marker([origin.lat, origin.lng], {
+                        icon: originIcon
+                    })
                     .addTo(map)
                     .bindPopup(`<strong>ต้นทาง</strong><br>${origin.name.substring(0,60)}`);
-                const destMarker = L.marker([dest.lat, dest.lng], { icon: destIcon })
+                const destMarker = L.marker([dest.lat, dest.lng], {
+                        icon: destIcon
+                    })
                     .addTo(map)
                     .bindPopup(`<strong>ปลายทาง</strong><br>${dest.name.substring(0,60)}`);
                 routeStationMarkers.push(originMarker, destMarker);
@@ -955,7 +1068,9 @@
                 stationMarkers.forEach(m => map.removeLayer(m));
 
                 sortedNearby.forEach((station, idx) => {
-                    const m = L.marker([station.lat, station.lng], { icon: getRouteStationIcon() })
+                    const m = L.marker([station.lat, station.lng], {
+                            icon: getRouteStationIcon()
+                        })
                         .addTo(map)
                         .bindPopup(`
                             <div style="min-width:180px">
@@ -980,7 +1095,7 @@
                 // Close modal
                 bootstrap.Modal.getInstance(document.getElementById('tripModal')).hide();
 
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 alert('เกิดข้อผิดพลาดในการค้นหาเส้นทาง กรุณาลองใหม่ครับ');
             } finally {
@@ -991,7 +1106,15 @@
     </script>
 
     <style>
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .spin-icon { display: inline-block; animation: spin 0.8s linear infinite; }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spin-icon {
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+        }
     </style>
 @endsection

@@ -17,33 +17,87 @@
             <img src="{{ asset('storage/' . $station->image) }}" class="card-img-top" style="height:250px; object-fit:cover;">
         @endif
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <h4>{{ $station->name }}</h4>
-                    <p class="text-muted">📍 {{ $station->address }}</p>
-                    <p>🕐 เปิด {{ $station->open_time ?? '-' }} - {{ $station->close_time ?? '-' }}</p>
+                    <h4 class="mb-2">{{ $station->name }}</h4>
+                    <p class="text-muted mb-1">
+                        <i class="bi bi-geo-alt-fill"></i> {{ $station->address }}
+                    </p>
+                    <p class="text-muted mb-0">
+                        <i class="bi bi-clock-fill"></i> {{ $station->open_time ?? '-' }} - {{ $station->close_time ?? '-' }}
+                    </p>
                 </div>
                 {{-- ปุ่ม Favorite --}}
-                <form action="{{ route('driver.favorite.toggle', $station) }}" method="POST">
+                <form action="{{ route('driver.favorite.toggle', $station) }}" method="POST" class="ms-2">
                     @csrf
                     @php
                         $isFav = auth()->user()->favorites->where('station_id', $station->id)->count() > 0;
                     @endphp
-                    <button class="btn {{ $isFav ? 'btn-danger' : 'btn-outline-danger' }} btn-lg">
-                        {{ $isFav ? '❤️ Favorited' : '🤍 Favorite' }}
+                    <button type="submit" class="btn btn-sm {{ $isFav ? 'btn-danger' : 'btn-outline-danger' }} rounded-pill">
+                        <i class="bi bi-heart-fill"></i>
                     </button>
                 </form>
             </div>
 
-            <a href="https://www.google.com/maps/dir/?api=1&destination={{ $station->lat }},{{ $station->lng }}"
-               target="_blank" class="btn btn-primary">
-                🗺️ นำทางไปสถานีนี้
-            </a>
-            <a href="{{ route('driver.map') }}" class="btn btn-secondary">← กลับแผนที่</a>
+            <div class="d-grid gap-2 d-sm-flex">
+                <a href="https://www.google.com/maps/dir/?api=1&destination={{ $station->lat }},{{ $station->lng }}"
+                   target="_blank" class="btn btn-primary btn-sm">
+                    <i class="bi bi-map"></i> นำทาง
+                </a>
+                <a href="{{ route('driver.map') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> กลับ
+                </a>
+            </div>
         </div>
     </div>
 
-
+    {{-- สิ่งอำนวยความสะดวก --}}
+    @if($station->facilities->count() > 0)
+    <div class="card mb-4">
+        <div class="card-header"><strong>🏪 สิ่งอำนวยความสะดวก</strong></div>
+        <div class="card-body">
+            <div class="row">
+                @foreach($station->facilities as $facility)
+                <div class="col-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div style="font-size: 1.5rem; margin-right: 10px; min-width: 30px;">
+                            @switch($facility->name)
+                                @case('ที่กินข้าว')
+                                    <i class="fas fa-utensils" style="color: #ff6b6b;"></i>
+                                    @break
+                                @case('ที่จอดรถ')
+                                    <i class="fas fa-square" style="color: #4ecdc4;"></i>
+                                    @break
+                                @case('ที่ชอปปิ้ง')
+                                    <i class="fas fa-shopping-cart" style="color: #ffe66d;"></i>
+                                    @break
+                                @case('ห้องน้ำ')
+                                    <i class="fas fa-restroom" style="color: #95e1d3;"></i>
+                                    @break
+                                @case('ร้านขายของชำ')
+                                    <i class="fas fa-store" style="color: #ffa502;"></i>
+                                    @break
+                                @case('ที่นั่งพัก')
+                                    <i class="fas fa-chair" style="color: #a8d8ea;"></i>
+                                    @break
+                                @case('WiFi')
+                                    <i class="fas fa-wifi" style="color: #667eea;"></i>
+                                    @break
+                                @case('สถานีอัดอากาศ')
+                                    <i class="fas fa-wind" style="color: #74b9ff;"></i>
+                                    @break
+                                @default
+                                    <i class="fas fa-check-circle" style="color: #74b9ff;"></i>
+                            @endswitch
+                        </div>
+                        <span>{{ $facility->name }}</span>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
 
     {{-- ฟอร์มรีวิว --}}
     @php

@@ -17,7 +17,8 @@ class StationController extends Controller
 
     public function create()
     {
-        return view('provider.stations.create');
+        $facilities = \App\Models\Facility::all();
+        return view('provider.stations.create', compact('facilities'));
     }
 
     public function store(Request $request)
@@ -30,6 +31,8 @@ class StationController extends Controller
             'open_time'  => 'nullable',
             'close_time' => 'nullable',
             'image'      => 'nullable|image|max:2048',
+            'facilities' => 'nullable|array',
+            'facilities.*' => 'integer|exists:facilities,id',
         ]);
 
         $imagePath = null;
@@ -37,7 +40,7 @@ class StationController extends Controller
             $imagePath = $request->file('image')->store('stations', 'public');
         }
 
-        Station::create([
+        $station = Station::create([
             'user_id'           => Auth::id(),
             'name'              => $request->name,
             'address'           => $request->address,
@@ -49,6 +52,10 @@ class StationController extends Controller
             'approval_status'  => 'approved',
         ]);
 
+        if ($request->has('facilities') && is_array($request->facilities)) {
+            $station->facilities()->sync($request->facilities);
+        }
+
         return redirect()->route('provider.stations.index')
                          ->with('success', 'เพิ่มสถานีสำเร็จแล้วครับ');
     }
@@ -59,7 +66,8 @@ class StationController extends Controller
         if ($station->user_id !== Auth::id()) {
             abort(403);
         }
-        return view('provider.stations.edit', compact('station'));
+        $facilities = \App\Models\Facility::all();
+        return view('provider.stations.edit', compact('station', 'facilities'));
     }
 
     public function update(Request $request, Station $station)
@@ -76,6 +84,8 @@ class StationController extends Controller
             'open_time'  => 'nullable',
             'close_time' => 'nullable',
             'image'      => 'nullable|image|max:2048',
+            'facilities' => 'nullable|array',
+            'facilities.*' => 'integer|exists:facilities,id',
         ]);
 
         $imagePath = $station->image;
@@ -92,6 +102,10 @@ class StationController extends Controller
             'close_time' => $request->close_time,
             'image'      => $imagePath,
         ]);
+
+        if ($request->has('facilities') && is_array($request->facilities)) {
+            $station->facilities()->sync($request->facilities);
+        }
 
         return redirect()->route('provider.stations.index')
                          ->with('success', 'แก้ไขสถานีสำเร็จแล้วครับ');
