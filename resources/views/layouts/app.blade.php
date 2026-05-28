@@ -29,10 +29,12 @@
                     <i class="bi bi-map-fill"></i>
                     <span>Home</span>
                 </a>
-                <a href="{{ route('driver.favorites') }}"
-                    class="bottom-nav-item {{ request()->routeIs('driver.favorites') ? 'active' : '' }}">
-                    <i class="bi bi-bookmark-fill"></i>
-                    <span>Saved</span>
+                {{-- Trip: triggers the modal inside map page --}}
+                <a href="{{ route('driver.map') }}"
+                    class="bottom-nav-item {{ request()->routeIs('driver.trip') ? 'active' : '' }}"
+                    id="bottom-trip-btn">
+                    <i class="bi bi-signpost-2-fill"></i>
+                    <span>Trip</span>
                 </a>
                 <a href="{{ route('driver.stations.create') }}" class="bottom-nav-item {{ request()->routeIs('driver.stations.create','driver.stations.store') ? 'active' : '' }}">
                     <i class="bi bi-plus-circle-fill"></i>
@@ -43,6 +45,23 @@
                     <span>Account</span>
                 </a>
             </nav>
+
+            <script>
+                // Bottom nav Trip button: if already on map page, open modal; else go to map first
+                document.addEventListener('DOMContentLoaded', function() {
+                    const tripBtn = document.getElementById('bottom-trip-btn');
+                    if (tripBtn) {
+                        tripBtn.addEventListener('click', function(e) {
+                            const openBtn = document.getElementById('btn-open-trip');
+                            if (openBtn) {
+                                e.preventDefault();
+                                openBtn.click();
+                            }
+                            // else: navigate to map (default href behavior)
+                        });
+                    }
+                });
+            </script>
         @else
             <nav class="navbar-ev d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <a class="navbar-brand-ev" href="/">
@@ -117,7 +136,7 @@
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
 
-    {{-- Flash messages — ต้องอยู่ที่นี่เพราะใช้ Blade --}}
+    {{-- Flash messages --}}
     <script>
         @if (session('success'))
             Swal.fire({
