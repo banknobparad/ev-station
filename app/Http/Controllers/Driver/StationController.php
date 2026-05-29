@@ -27,9 +27,16 @@ class StationController extends Controller
             'image'          => 'nullable|image|max:10240',
             'gallery_images' => 'nullable|array',
             'gallery_images.*' => 'nullable|image|max:10240',
+
             'facilities'     => 'nullable|array',
             'facilities.*'   => 'integer|exists:facilities,id',
+
+            // connectors (หัวชาร์จ)
+            'connectors'                 => 'nullable|array',
+            'connectors.*.type'          => 'required_with:connectors.*.total|in:CCS2,CHAdeMO,Type2,GB/T',
+            'connectors.*.total'         => 'required_with:connectors.*.type|integer|min:1',
         ]);
+
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -60,8 +67,26 @@ class StationController extends Controller
             $station->facilities()->sync($request->facilities);
         }
 
+        // บันทึกหัวชาร์จที่ driver เพิ่ม
+        if ($request->has('connectors') && is_array($request->connectors)) {
+            foreach ($request->connectors as $connectorInput) {
+                $type = $connectorInput['type'] ?? null;
+                $total = $connectorInput['total'] ?? null;
+
+                if (!$type || !$total) {
+                    continue;
+                }
+
+                $station->connectors()->create([
+                    'type'  => $type,
+                    'total' => $total,
+                ]);
+            }
+        }
+
         return redirect()->route('driver.account')
             ->with('success', 'ส่งคำขอเพิ่มสถานีแล้ว รอ Admin อนุมัติครับ');
+
     }
 }
 

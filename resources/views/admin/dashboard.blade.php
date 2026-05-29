@@ -66,6 +66,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($pendingStations as $station)
+                                        @php $detailModalId = 'stationDetailModal_' . $station->id; @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>
@@ -74,7 +75,12 @@
                                             </td>
                                             <td>{{ $station->user->name ?? '-' }}</td>
                                             <td>
-                                                <div class="d-flex gap-2">
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    <button type="button" class="btn btn-sm btn-outline-info"
+                                                            data-bs-toggle="modal" data-bs-target="#{{ $detailModalId }}">
+                                                        <i class="bi bi-eye"></i> ดูข้อมูล
+                                                    </button>
+
                                                     <form action="{{ route('admin.stations.approve', $station) }}" method="POST">
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm btn-success">อนุมัติ</button>
@@ -87,11 +93,27 @@
                                                 </div>
                                             </td>
                                         </tr>
+
+                                        {{-- Modal รายละเอียดสถานีที่ driver ส่งมา --}}
+                                        <div class="modal fade" id="{{ $detailModalId }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">ข้อมูลสถานี: {{ $station->name }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        @include('admin.stations._station_detail_rows', ['station' => $station])
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
                     @endif
+
                 </div>
             </div>
         </div>
@@ -99,6 +121,23 @@
 
     {{-- Menu Cards --}}
     <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="stat-icon mb-0" style="background:rgba(99,102,241,0.15)">⚡</div>
+                        <div>
+                            <h5 class="mb-0">จัดการสถานีทั้งหมด</h5>
+                            <small class="text-muted">แก้ไขรูป/ที่อยู่/คอมเมนต์/หัวชาร์จ</small>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.stations.index') }}" class="btn-ev-primary">
+                        <i class="bi bi-arrow-right-circle me-1"></i>เปิดจัดการ
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-body p-4">
@@ -115,6 +154,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-body p-4">
@@ -135,3 +175,4 @@
 
 </div>
 @endsection
+

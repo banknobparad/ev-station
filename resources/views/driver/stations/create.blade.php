@@ -103,6 +103,9 @@
                     </div>
                 </div>
 
+                @include('driver.stations._connectors_fields')
+
+
                 <div class="driver-form-actions">
                     <button type="submit" class="btn btn-primary w-100 driver-submit-btn">
                         <i class="bi bi-send me-2"></i>ส่งคำขอ

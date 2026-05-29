@@ -64,9 +64,32 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('stations/{station}/approve', [App\Http\Controllers\Admin\StationApprovalController::class, 'approve'])->name('stations.approve');
     Route::delete('stations/{station}/reject', [App\Http\Controllers\Admin\StationApprovalController::class, 'reject'])->name('stations.reject');
 
+    // Stations management
+    Route::get('stations', [App\Http\Controllers\Admin\StationManagementController::class, 'index'])->name('stations.index');
+    Route::get('stations/{station}', [App\Http\Controllers\Admin\StationManagementController::class, 'show'])->name('stations.show');
+    Route::put('stations/{station}', [App\Http\Controllers\Admin\StationManagementController::class, 'update'])->name('stations.update');
+    Route::delete('stations/{station}', [App\Http\Controllers\Admin\StationManagementController::class, 'destroy'])->name('stations.destroy');
+
+    Route::post('stations/{station}/image/delete', [App\Http\Controllers\Admin\StationManagementController::class, 'deleteStationImage'])
+        ->name('stations.delete_station_image');
+    Route::post('stations/{station}/gallery-image/delete', [App\Http\Controllers\Admin\StationManagementController::class, 'deleteGalleryImage'])
+        ->name('stations.delete_gallery_image');
+
+    Route::post('stations/{station}/connectors', [App\Http\Controllers\Admin\StationManagementController::class, 'addConnector'])
+        ->name('stations.connectors.add');
+    Route::put('stations/{station}/connectors/{connector}', [App\Http\Controllers\Admin\StationManagementController::class, 'updateConnector'])
+        ->name('stations.connectors.update');
+    Route::delete('stations/{station}/connectors/{connector}', [App\Http\Controllers\Admin\StationManagementController::class, 'destroyConnector'])
+        ->name('stations.connectors.destroy');
+
+    Route::delete('stations/reviews/{review}', [App\Http\Controllers\Admin\StationManagementController::class, 'destroyReview'])
+        ->name('stations.reviews.destroy');
+
     Route::resource('users', App\Http\Controllers\Admin\UserController::class)
         ->only(['index', 'create', 'store', 'destroy']);
+
     Route::get('reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
     Route::get('reviews/{station}', [App\Http\Controllers\Admin\ReviewController::class, 'show'])->name('reviews.show');
     Route::delete('reviews/{review}', [App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
+
