@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Station;
+use App\Models\DriverStationAuditLog;
+
 
 class DashboardController extends Controller
 {
@@ -20,12 +22,18 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $recentDriverStationLogs = DriverStationAuditLog::with(['driver', 'station'])
+            ->latest()
+            ->limit(10)
+            ->get();
 
         return view('admin.dashboard', compact(
             'totalDrivers',
             'totalProviders',
             'totalStations',
-            'pendingStations'
+            'pendingStations',
+            'recentDriverStationLogs'
         ));
+
     }
 }

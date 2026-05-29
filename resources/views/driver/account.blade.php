@@ -193,19 +193,35 @@
                                             @php
                                                 $status = $station->approval_status ?? 'pending';
                                             @endphp
-                                            @if ($status === 'approved')
-                                                <span class="badge bg-success-subtle text-success rounded-pill">
-                                                    <i class="bi bi-check-circle me-1"></i>อนุมัติแล้ว
-                                                </span>
-                                            @elseif($status === 'rejected')
-                                                <span class="badge bg-danger-subtle text-danger rounded-pill">
-                                                    <i class="bi bi-x-circle me-1"></i>ถูกปฏิเสธ
-                                                </span>
-                                            @else
-                                                <span class="badge bg-warning-subtle text-warning rounded-pill">
-                                                    <i class="bi bi-hourglass-split me-1"></i>รอการอนุมัติ
-                                                </span>
-                                            @endif
+                                            <div class="d-flex flex-column align-items-end gap-2">
+                                                @if ($status === 'approved')
+                                                    <span class="badge bg-success-subtle text-success rounded-pill">
+                                                        <i class="bi bi-check-circle me-1"></i>อนุมัติแล้ว
+                                                    </span>
+                                                @elseif($status === 'rejected')
+                                                    <span class="badge bg-danger-subtle text-danger rounded-pill">
+                                                        <i class="bi bi-x-circle me-1"></i>ถูกปฏิเสธ
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-warning-subtle text-warning rounded-pill">
+                                                        <i class="bi bi-hourglass-split me-1"></i>รอการอนุมัติ
+                                                    </span>
+                                                @endif
+
+                                                <div class="d-flex gap-2">
+                                                    <a href="{{ route('driver.stations.edit', $station) }}"
+                                                        class="btn btn-sm btn-outline-primary rounded-3"
+                                                        title="แก้ไขสถานีของคุณ">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-outline-danger rounded-3"
+                                                        title="ลบสถานีของคุณ"
+                                                        onclick="openDeleteModal({{ $station->id }}, {{ json_encode($station->name) }})">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -286,7 +302,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-medium">ความคิดเห็น</label>
-                            <textarea name="comment" id="editComment" class="form-control rounded-3" rows="3" maxlength="500"></textarea>
+                            <textarea name="comment" id="editComment" class="form-control rounded-3" rows="3"
+                                maxlength="500"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
@@ -298,30 +315,71 @@
         </div>
     </div>
 
-    @push('scripts')
-        <script>
-            function openEditModal(id, star, comment) {
-                const form = document.getElementById('editReviewForm');
-                form.action = `/review/${id}`;
-                document.getElementById('editComment').value = comment;
-                setStars(star);
-                new bootstrap.Modal(document.getElementById('editReviewModal')).show();
-            }
-
-            function setStars(value) {
-                document.getElementById('starInput').value = value;
-                document.querySelectorAll('.star-btn').forEach(btn => {
-                    const v = parseInt(btn.dataset.value);
-                    btn.className =
-                        `bi fs-4 star-btn ${v <= value ? 'bi-star-fill text-warning' : 'bi-star text-muted'}`;
-                    btn.style.cursor = 'pointer';
-                });
-            }
-
-            document.querySelectorAll('.star-btn').forEach(btn => {
-                btn.addEventListener('click', () => setStars(parseInt(btn.dataset.value)));
-            });
-        </script>
-    @endpush
+    {{-- Modal: Delete Station (reason) --}}
+    <div class="modal fade" id="deleteStationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">ลบสถานี</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="deleteStationForm" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-body pt-2">
+                        <input type="hidden" name="_station_id" id="deleteStationId">
+                        <p class="text-muted mb-2" id="deleteStationName"></p>
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">เหตุผลที่ลบ</label>
+                            <textarea name="reason" id="deleteStationReason" class="form-control rounded-3" rows="4"
+                                required maxlength="1000" placeholder="กรอกเหตุผลที่ต้องการลบ..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-danger rounded-3">
+                            <i class="bi bi-trash me-1"></i>ยืนยันลบ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 @endsection
+
+{{-- @push must be OUTSIDE @section --}}
+@push('scripts')
+    <script>
+        function openDeleteModal(stationId, stationName) {
+            const form = document.getElementById('deleteStationForm');
+            form.action = `/account/stations/${stationId}`;
+            document.getElementById('deleteStationId').value = stationId;
+            document.getElementById('deleteStationName').textContent = `สถานี: ${stationName}`;
+            document.getElementById('deleteStationReason').value = '';
+            new bootstrap.Modal(document.getElementById('deleteStationModal')).show();
+        }
+
+        function openEditModal(id, star, comment) {
+            const form = document.getElementById('editReviewForm');
+            form.action = `/review/${id}`;
+            document.getElementById('editComment').value = comment;
+            setStars(star);
+            new bootstrap.Modal(document.getElementById('editReviewModal')).show();
+        }
+
+        function setStars(value) {
+            document.getElementById('starInput').value = value;
+            document.querySelectorAll('.star-btn').forEach(btn => {
+                const v = parseInt(btn.dataset.value);
+                btn.className =
+                    `bi fs-4 star-btn ${v <= value ? 'bi-star-fill text-warning' : 'bi-star text-muted'}`;
+                btn.style.cursor = 'pointer';
+            });
+        }
+
+        document.querySelectorAll('.star-btn').forEach(btn => {
+            btn.addEventListener('click', () => setStars(parseInt(btn.dataset.value)));
+        });
+    </script>
+@endpush

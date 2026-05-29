@@ -38,6 +38,13 @@ Route::middleware(['auth', 'role:driver'])->group(function () {
     Route::get('/account/stations/create', [App\Http\Controllers\Driver\StationController::class, 'create'])->name('driver.stations.create');
     Route::post('/account/stations', [App\Http\Controllers\Driver\StationController::class, 'store'])->name('driver.stations.store');
 
+    // Driver edit/delete own stations (+ audit logs)
+// เปลี่ยนจาก DriverStationController::class เป็น StationController::class
+Route::get('/account/stations/{station}/edit',   [App\Http\Controllers\Driver\StationController::class, 'edit'])->name('driver.stations.edit');
+Route::put('/account/stations/{station}',        [App\Http\Controllers\Driver\StationController::class, 'update'])->name('driver.stations.update');
+Route::delete('/account/stations/{station}',     [App\Http\Controllers\Driver\StationController::class, 'destroy'])->name('driver.stations.destroy');
+
+
     Route::get('/station/{station}', [App\Http\Controllers\Driver\MapController::class, 'show'])->name('driver.station');
     Route::post('/station/{station}/review', [App\Http\Controllers\Driver\ReviewController::class, 'store'])->name('driver.review.store');
     Route::delete('/review/{review}', [App\Http\Controllers\Driver\ReviewController::class, 'destroy'])->name('driver.review.destroy');

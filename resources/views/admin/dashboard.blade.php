@@ -119,6 +119,63 @@
         </div>
     </div>
 
+    {{-- Driver Station Activity (edit/delete) --}}
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                        <div>
+                            <h5 class="mb-0">กิจกรรมสถานีของคนขับ (แก้ไข/ลบ)</h5>
+                            <small class="text-muted">แสดงรายการล่าสุดที่ driver แก้ไขหรือแจ้งลบ (มีเหตุผล)</small>
+                        </div>
+                    </div>
+
+                    @if($recentDriverStationLogs->isEmpty())
+                        <div class="text-muted">ยังไม่มีรายการกิจกรรมครับ</div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>คนขับ</th>
+                                        <th>สถานี</th>
+                                        <th>การทำรายการ</th>
+                                        <th>เหตุผล</th>
+                                        <th>เวลา</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentDriverStationLogs as $log)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $log->driver->name ?? '-' }}</td>
+                                            <td>
+                                                <strong>{{ $log->station->name ?? '-' }}</strong>
+                                            </td>
+                                            <td>
+                                                @if($log->action === 'edit')
+                                                    <span class="badge bg-primary-subtle text-primary rounded-pill">แก้ไข</span>
+                                                @else
+                                                    <span class="badge bg-danger-subtle text-danger rounded-pill">ลบ</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-muted small">{{ $log->reason ?? '-' }}</td>
+                                            <td class="text-muted small">{{ $log->created_at->diffForHumans() }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     {{-- Menu Cards --}}
     <div class="row g-3">
         <div class="col-md-6">
