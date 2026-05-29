@@ -46,11 +46,23 @@
                                 <i class="bi bi-envelope me-1"></i>{{ $user->email }}
                             @endif
                         </div>
+                        @if ($user->citizen_id || $user->birth_date)
+                            <div class="text-muted small mt-1">
+                                @if ($user->citizen_id)
+                                    <span><i class="bi bi-card-text me-1"></i>{{ $user->citizen_id }}</span>
+                                @endif
+                                @if ($user->birth_date)
+                                    <span class="ms-2">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        {{ $user->birth_date instanceof \DateTimeInterface ? $user->birth_date->format('d/m/Y') : \Carbon\Carbon::parse($user->birth_date)->format('d/m/Y') }}
+                                    </span>
+                                @endif
+                            </div>
+                        @endif
                     </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-3" data-bs-toggle="modal"
-                        data-bs-target="#editAccountModal">
-                        <i class="bi bi-pencil me-1"></i>แก้ไข
-                    </button>
+                    <a href="{{ route('driver.profile.edit') }}" class="btn btn-outline-primary btn-sm rounded-3">
+                        <i class="bi bi-pencil me-1"></i>แก้ไขโปรไฟล์
+                    </a>
                 </div>
                 <hr class="my-3">
 
@@ -192,6 +204,7 @@
                                         <div class="flex-shrink-0">
                                             @php
                                                 $status = $station->approval_status ?? 'pending';
+                                                $pendingAudit = $pendingAuditsByStation->get($station->id);
                                             @endphp
                                             <div class="d-flex flex-column align-items-end gap-2">
                                                 @if ($status === 'approved')
@@ -208,18 +221,43 @@
                                                     </span>
                                                 @endif
 
+                                                @if ($pendingAudit)
+                                                    @if ($pendingAudit->action === 'edit')
+                                                        <span class="badge bg-primary-subtle text-primary rounded-pill">
+                                                            <i class="bi bi-pencil me-1"></i>รออนุมัติการแก้ไข
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-danger-subtle text-danger rounded-pill">
+                                                            <i class="bi bi-trash me-1"></i>รออนุมัติการลบ
+                                                        </span>
+                                                    @endif
+                                                @endif
+
                                                 <div class="d-flex gap-2">
-                                                    <a href="{{ route('driver.stations.edit', $station) }}"
-                                                        class="btn btn-sm btn-outline-primary rounded-3"
-                                                        title="แก้ไขสถานีของคุณ">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-outline-danger rounded-3"
-                                                        title="ลบสถานีของคุณ"
-                                                        onclick="openDeleteModal({{ $station->id }}, {{ json_encode($station->name) }})">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
+                                                    @if ($pendingAudit)
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-primary rounded-3" disabled
+                                                            title="มีคำขอรอ Admin อนุมัติอยู่แล้ว">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-danger rounded-3" disabled
+                                                            title="มีคำขอรอ Admin อนุมัติอยู่แล้ว">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    @else
+                                                        <a href="{{ route('driver.stations.edit', $station) }}"
+                                                            class="btn btn-sm btn-outline-primary rounded-3"
+                                                            title="แก้ไขสถานีของคุณ">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </a>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-outline-danger rounded-3"
+                                                            title="ลบสถานีของคุณ"
+                                                            onclick="openDeleteModal({{ $station->id }}, {{ json_encode($station->name) }})">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -231,51 +269,6 @@
                 @endif
             </div>
 
-        </div>
-    </div>
-
-    {{-- Modal: Edit Account --}}
-    <div class="modal fade" id="editAccountModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">แก้ไขข้อมูลส่วนตัว</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="POST" action="{{ route('driver.account.update') }}">
-                    @csrf
-                    <div class="modal-body pt-2">
-                        <div class="mb-3">
-                            <label class="form-label fw-medium">ชื่อ</label>
-                            <input type="text" name="name"
-                                class="form-control rounded-3 @error('name') is-invalid @enderror"
-                                value="{{ old('name', $user->name) }}" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-medium">อีเมล</label>
-                            <input type="email" name="email"
-                                class="form-control rounded-3 @error('email') is-invalid @enderror"
-                                value="{{ old('email', $user->email) }}">
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-medium">เบอร์โทร</label>
-                            <input type="text" class="form-control rounded-3 bg-light"
-                                value="{{ $user->phone ?? '-' }}" disabled>
-                            <div class="form-text">เบอร์โทรไม่สามารถแก้ไขได้จากหน้านี้</div>
-                        </div>
-                    </div>
-                    <div class="modal-footer border-0 pt-0">
-                        <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">ยกเลิก</button>
-                        <button type="submit" class="btn btn-primary rounded-3">บันทึก</button>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 

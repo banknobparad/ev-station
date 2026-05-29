@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Station;
 use App\Models\DriverStationAuditLog;
+use App\Models\Facility;
 
 
 class DashboardController extends Controller
@@ -23,16 +24,20 @@ class DashboardController extends Controller
             ->get();
 
         $recentDriverStationLogs = DriverStationAuditLog::with(['driver', 'station'])
+            ->pending()
             ->latest()
             ->limit(10)
             ->get();
+
+        $facilitiesById = Facility::pluck('name', 'id');
 
         return view('admin.dashboard', compact(
             'totalDrivers',
             'totalProviders',
             'totalStations',
             'pendingStations',
-            'recentDriverStationLogs'
+            'recentDriverStationLogs',
+            'facilitiesById'
         ));
 
     }

@@ -7,43 +7,38 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // ===== Auth Routes =====
-// Register
-Route::get('/register',          [App\Http\Controllers\Auth\RegisterController::class, 'registerStep1'])->name('register.phone');
-Route::post('/register',         [App\Http\Controllers\Auth\RegisterController::class, 'registerStep1Post']);
+Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'registerStep1'])->name('register.phone');
+Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'registerStep1Post']);
 
-// Login
-Route::get('/login',             [App\Http\Controllers\Auth\RegisterController::class, 'loginStep1'])->name('login');
-Route::post('/login',            [App\Http\Controllers\Auth\RegisterController::class, 'loginStep1Post'])->name('login.phone');
-Route::get('/login/reset',       [App\Http\Controllers\Auth\RegisterController::class, 'resetLogin'])->name('login.reset');
-Route::get('/login/otp',         [App\Http\Controllers\Auth\RegisterController::class, 'loginOtp'])->name('login.otp');
-Route::post('/login/otp',        [App\Http\Controllers\Auth\RegisterController::class, 'loginOtpPost']);
-Route::get('/login/password',    [App\Http\Controllers\Auth\RegisterController::class, 'loginPassword'])->name('login.password');
-Route::post('/login/password',   [App\Http\Controllers\Auth\RegisterController::class, 'loginPasswordPost']);
+Route::get('/login', [App\Http\Controllers\Auth\RegisterController::class, 'loginStep1'])->name('login');
+Route::post('/login', [App\Http\Controllers\Auth\RegisterController::class, 'loginStep1Post'])->name('login.phone');
+Route::get('/login/reset', [App\Http\Controllers\Auth\RegisterController::class, 'resetLogin'])->name('login.reset');
+Route::get('/login/otp', [App\Http\Controllers\Auth\RegisterController::class, 'loginOtp'])->name('login.otp');
+Route::post('/login/otp', [App\Http\Controllers\Auth\RegisterController::class, 'loginOtpPost']);
+Route::get('/login/password', [App\Http\Controllers\Auth\RegisterController::class, 'loginPassword'])->name('login.password');
+Route::post('/login/password', [App\Http\Controllers\Auth\RegisterController::class, 'loginPasswordPost']);
 
-// Logout
 Route::post('/logout', function () {
     Auth::logout();
     return redirect('/');
 })->name('logout');
 
-Route::get('/home', function () { return redirect('/'); })->middleware('auth');
+Route::get('/home', function () {
+    return redirect('/');
+})->middleware('auth');
 
 // ===== Driver =====
 Route::middleware(['auth', 'role:driver'])->group(function () {
     Route::get('/map', [App\Http\Controllers\Driver\MapController::class, 'index'])->name('driver.map');
     Route::get('/account', [App\Http\Controllers\Driver\AccountController::class, 'index'])->name('driver.account');
-    Route::post('/account', [App\Http\Controllers\Driver\AccountController::class, 'update'])->name('driver.account.update');
+    Route::get('/account/profile', [App\Http\Controllers\Driver\ProfileController::class, 'edit'])->name('driver.profile.edit');
+    Route::put('/account/profile', [App\Http\Controllers\Driver\ProfileController::class, 'update'])->name('driver.profile.update');
 
-    // Driver add station (pending)
     Route::get('/account/stations/create', [App\Http\Controllers\Driver\StationController::class, 'create'])->name('driver.stations.create');
     Route::post('/account/stations', [App\Http\Controllers\Driver\StationController::class, 'store'])->name('driver.stations.store');
-
-    // Driver edit/delete own stations (+ audit logs)
-// เปลี่ยนจาก DriverStationController::class เป็น StationController::class
-Route::get('/account/stations/{station}/edit',   [App\Http\Controllers\Driver\StationController::class, 'edit'])->name('driver.stations.edit');
-Route::put('/account/stations/{station}',        [App\Http\Controllers\Driver\StationController::class, 'update'])->name('driver.stations.update');
-Route::delete('/account/stations/{station}',     [App\Http\Controllers\Driver\StationController::class, 'destroy'])->name('driver.stations.destroy');
-
+    Route::get('/account/stations/{station}/edit', [App\Http\Controllers\Driver\StationController::class, 'edit'])->name('driver.stations.edit');
+    Route::put('/account/stations/{station}', [App\Http\Controllers\Driver\StationController::class, 'update'])->name('driver.stations.update');
+    Route::delete('/account/stations/{station}', [App\Http\Controllers\Driver\StationController::class, 'destroy'])->name('driver.stations.destroy');
 
     Route::get('/station/{station}', [App\Http\Controllers\Driver\MapController::class, 'show'])->name('driver.station');
     Route::post('/station/{station}/review', [App\Http\Controllers\Driver\ReviewController::class, 'store'])->name('driver.review.store');
@@ -57,6 +52,8 @@ Route::delete('/account/stations/{station}',     [App\Http\Controllers\Driver\St
 // ===== Provider =====
 Route::middleware(['auth', 'role:provider'])->prefix('provider')->name('provider.')->group(function () {
     Route::get('/', [App\Http\Controllers\Provider\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('profile', [App\Http\Controllers\Provider\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile', [App\Http\Controllers\Provider\ProfileController::class, 'update'])->name('profile.update');
     Route::resource('stations', App\Http\Controllers\Provider\StationController::class);
     Route::resource('stations.connectors', App\Http\Controllers\Provider\ConnectorController::class)
         ->only(['index', 'create', 'store', 'update', 'destroy']);
@@ -66,12 +63,13 @@ Route::middleware(['auth', 'role:provider'])->prefix('provider')->name('provider
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
-    // Stations approval
-    Route::get('stations/pending', [App\Http\Controllers\Admin\StationApprovalController::class, 'indexPending'])->name('stations.pending');
-    Route::post('stations/{station}/approve', [App\Http\Controllers\Admin\StationApprovalController::class, 'approve'])->name('stations.approve');
-    Route::delete('stations/{station}/reject', [App\Http\Controllers\Admin\StationApprovalController::class, 'reject'])->name('stations.reject');
+    Route::get('stations/pending', [App\Http\Controllers\Admin\StationManagementController::class, 'pending'])->name('stations.pending');
+    Route::post('stations/{station}/approve', [App\Http\Controllers\Admin\StationManagementController::class, 'approve'])->name('stations.approve');
+    Route::delete('stations/{station}/reject', [App\Http\Controllers\Admin\StationManagementController::class, 'reject'])->name('stations.reject');
 
-    // Stations management
+    Route::post('driver-station-logs/{log}/approve', [App\Http\Controllers\Admin\StationManagementController::class, 'approveDriverLog'])->name('driver-station-logs.approve');
+    Route::post('driver-station-logs/{log}/reject', [App\Http\Controllers\Admin\StationManagementController::class, 'rejectDriverLog'])->name('driver-station-logs.reject');
+
     Route::get('stations', [App\Http\Controllers\Admin\StationManagementController::class, 'index'])->name('stations.index');
     Route::get('stations/{station}', [App\Http\Controllers\Admin\StationManagementController::class, 'show'])->name('stations.show');
     Route::put('stations/{station}', [App\Http\Controllers\Admin\StationManagementController::class, 'update'])->name('stations.update');
@@ -99,4 +97,3 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('reviews/{station}', [App\Http\Controllers\Admin\ReviewController::class, 'show'])->name('reviews.show');
     Route::delete('reviews/{review}', [App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
-

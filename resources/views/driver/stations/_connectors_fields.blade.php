@@ -1,5 +1,17 @@
 @php
     $connectorTypes = ['CCS2', 'CHAdeMO', 'Type2', 'GB/T'];
+
+    if (filled(old('connectors'))) {
+        $rows = array_values(old('connectors'));
+    } elseif (!empty($connectorRows ?? null)) {
+        $rows = array_values($connectorRows);
+    } else {
+        $rows = [];
+    }
+
+    if (empty($rows)) {
+        $rows = [['type' => '', 'total' => 1]];
+    }
 @endphp
 
 <div class="mb-4">
@@ -20,57 +32,62 @@
                 </tr>
             </thead>
             <tbody id="connectors-table-body">
-                {{-- row template --}}
-                <tr class="connector-row" data-index="0">
-                    <td>
-                        <select name="connectors[0][type]" class="form-select" required>
-                            <option value="">-- เลือกประเภท --</option>
-                            @foreach($connectorTypes as $type)
-                                <option value="{{ $type }}">{{ $type }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" name="connectors[0][total]" class="form-control" min="1" value="1" required>
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-danger" onclick="removeConnectorRow(this)">ลบ</button>
-                    </td>
-                </tr>
+                @foreach($rows as $idx => $row)
+                    <tr class="connector-row" data-index="{{ $idx }}">
+                        <td>
+                            <select name="connectors[{{ $idx }}][type]" class="form-select" required>
+                                <option value="">-- เลือกประเภท --</option>
+                                @foreach($connectorTypes as $type)
+                                    <option value="{{ $type }}"
+                                        {{ ($row['type'] ?? '') === $type ? 'selected' : '' }}>
+                                        {{ $type }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number"
+                                name="connectors[{{ $idx }}][total]"
+                                class="form-control" min="1"
+                                value="{{ $row['total'] ?? 1 }}" required>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-danger"
+                                onclick="removeConnectorRow(this)">ลบ</button>
+                        </td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
 
-    <small class="text-muted">คุณสามารถเพิ่มหลายประเภทได้</small>
+    <small class="text-muted">คุณสามารถเพิ่ม/ลบหลายประเภทได้</small>
 </div>
 
-<script>
-    function addConnectorRow() {
-        const tbody = document.getElementById('connectors-table-body');
-        const rows = tbody.querySelectorAll('.connector-row');
-        const nextIndex = rows.length; // ใช้จำนวนแถวเป็น index
+@once
+    @push('scripts')
+    <script>
+        window.addConnectorRow = function () {
+            var tbody = document.getElementById('connectors-table-body');
+            var rows  = tbody.querySelectorAll('.connector-row');
+            var idx   = rows.length;
+            var clone = rows[0].cloneNode(true);
+            clone.dataset.index = idx;
+            var sel = clone.querySelector('select');
+            var inp = clone.querySelector('input[type="number"]');
+            sel.value = '';
+            inp.value = 1;
+            sel.name  = 'connectors[' + idx + '][type]';
+            inp.name  = 'connectors[' + idx + '][total]';
+            tbody.appendChild(clone);
+        };
 
-        const template = rows[0].cloneNode(true);
-        template.dataset.index = nextIndex;
-
-        // รีเซ็ตค่า
-        const select = template.querySelector('select');
-        const input = template.querySelector('input');
-        select.value = '';
-        input.value = 1;
-
-        // เปลี่ยน name ของช่อง input/select
-        // name เดิม: connectors[0][type] / connectors[0][total]
-        select.name = select.name.replace(/connectors\[\d+\]\[type\]/, `connectors[${nextIndex}][type]`);
-        input.name = input.name.replace(/connectors\[\d+\]\[total\]/, `connectors[${nextIndex}][total]`);
-
-        tbody.appendChild(template);
-    }
-
-    function removeConnectorRow(btn) {
-        const row = btn.closest('.connector-row');
-        if (!row) return;
-        row.remove();
-    }
-</script>
-
+        window.removeConnectorRow = function (btn) {
+            var tbody = document.getElementById('connectors-table-body');
+            if (tbody.querySelectorAll('.connector-row').length <= 1) return;
+            var row = btn.closest('.connector-row');
+            if (row) row.remove();
+        };
+    </script>
+    @endpush
+@endonce

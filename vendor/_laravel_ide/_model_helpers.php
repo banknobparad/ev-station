@@ -336,11 +336,30 @@ namespace App\Models {
     /**
      * App\Models\DriverStationAuditLog
      *
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property array|null $payload
+     * @property string|null $reason
+     * @property string $status
+     * @property string $action
+     * @property mixed $station_id
+     * @property mixed $driver_id
+     * @property int $id
      * @property-read \App\Models\User $driver
      * @property-read \App\Models\Station $station
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereDriverId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereStationId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereAction($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereReason($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog wherePayload($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog query()
+     * @method static \Illuminate\Database\Eloquent\Builder<DriverStationAuditLog>|DriverStationAuditLog pending() {@see App\Models\DriverStationAuditLog::scopePending()}
      * @method static mixed select($columns)
      * @method static mixed selectSub($query, $as)
      * @method static mixed selectExpression($expression, $as)
@@ -2009,6 +2028,8 @@ namespace App\Models {
     /**
      * App\Models\User
      *
+     * @property \Illuminate\Support\Carbon|null $birth_date
+     * @property string|null $citizen_id
      * @property string|null $phone
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
@@ -2039,6 +2060,8 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User wherePhone($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereCitizenId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereBirthDate($value)
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User query()

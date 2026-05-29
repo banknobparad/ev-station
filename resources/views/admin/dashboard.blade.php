@@ -126,13 +126,13 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                         <div>
-                            <h5 class="mb-0">กิจกรรมสถานีของคนขับ (แก้ไข/ลบ)</h5>
-                            <small class="text-muted">แสดงรายการล่าสุดที่ driver แก้ไขหรือแจ้งลบ (มีเหตุผล)</small>
+                            <h5 class="mb-0">คำขอแก้ไข/ลบสถานีจากคนขับ</h5>
+                            <small class="text-muted">รอ Admin ตรวจสอบ — กดดูรายละเอียดแล้วอนุมัติหรือยกเลิก</small>
                         </div>
                     </div>
 
                     @if($recentDriverStationLogs->isEmpty())
-                        <div class="text-muted">ยังไม่มีรายการกิจกรรมครับ</div>
+                        <div class="text-muted">ไม่มีคำขอรออนุมัติครับ</div>
                     @else
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
@@ -141,29 +141,82 @@
                                         <th>#</th>
                                         <th>คนขับ</th>
                                         <th>สถานี</th>
-                                        <th>การทำรายการ</th>
-                                        <th>เหตุผล</th>
+                                        <th>ประเภทคำขอ</th>
                                         <th>เวลา</th>
+                                        <th>จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($recentDriverStationLogs as $log)
+                                        @php
+                                            $auditModalId = 'driverAuditModal_' . $log->id;
+                                            $stationName = $log->station->name
+                                                ?? ($log->payload['snapshot']['name'] ?? ($log->payload['before']['name'] ?? '-'));
+                                        @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $log->driver->name ?? '-' }}</td>
-                                            <td>
-                                                <strong>{{ $log->station->name ?? '-' }}</strong>
-                                            </td>
+                                            <td><strong>{{ $stationName }}</strong></td>
                                             <td>
                                                 @if($log->action === 'edit')
-                                                    <span class="badge bg-primary-subtle text-primary rounded-pill">แก้ไข</span>
+                                                    <span class="badge bg-primary-subtle text-primary rounded-pill">
+                                                        <i class="bi bi-pencil me-1"></i>ขอแก้ไข
+                                                    </span>
                                                 @else
-                                                    <span class="badge bg-danger-subtle text-danger rounded-pill">ลบ</span>
+                                                    <span class="badge bg-danger-subtle text-danger rounded-pill">
+                                                        <i class="bi bi-trash me-1"></i>ขอลบ
+                                                    </span>
                                                 @endif
                                             </td>
-                                            <td class="text-muted small">{{ $log->reason ?? '-' }}</td>
                                             <td class="text-muted small">{{ $log->created_at->diffForHumans() }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-info"
+                                                        data-bs-toggle="modal" data-bs-target="#{{ $auditModalId }}">
+                                                    <i class="bi bi-eye"></i> ดูข้อมูล
+                                                </button>
+                                            </td>
                                         </tr>
+
+                                        <div class="modal fade" id="{{ $auditModalId }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            @if($log->action === 'edit')
+                                                                คำขอแก้ไขสถานี: {{ $stationName }}
+                                                            @else
+                                                                คำขอลบสถานี: {{ $stationName }}
+                                                            @endif
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="text-muted small mb-3">
+                                                            ผู้ส่ง: <strong>{{ $log->driver->name ?? '-' }}</strong>
+                                                            · {{ $log->created_at->format('d/m/Y H:i') }}
+                                                        </div>
+                                                        @include('admin.stations._audit_log_detail', ['log' => $log, 'facilitiesById' => $facilitiesById])
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                                                        <form action="{{ route('admin.driver-station-logs.reject', $log) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-outline-danger"
+                                                                    onclick="return confirm('ยกเลิกคำขอนี้?')">
+                                                                ยกเลิก
+                                                            </button>
+                                                        </form>
+                                                        <form action="{{ route('admin.driver-station-logs.approve', $log) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-success"
+                                                                    onclick="return confirm('{{ $log->action === 'delete' ? 'อนุมัติการลบสถานีนี้?' : 'อนุมัติการแก้ไขสถานีนี้?' }}')">
+                                                                อนุมัติ
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endforeach
                                 </tbody>
                             </table>

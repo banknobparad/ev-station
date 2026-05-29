@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Station\ConnectorRequest;
+use App\Http\Requests\Station\UpdateAdminStationRequest;
 use App\Models\Connector;
+use App\Models\DriverStationAuditLog;
 use App\Models\Review;
 use App\Models\Station;
+use App\Services\StationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class StationManagementController extends Controller
 {
+    public function __construct(private readonly StationService $stations)
+    {
+    }
+
     public function index()
     {
         $stations = Station::with(['user', 'connectors', 'facilities'])
@@ -21,6 +28,59 @@ class StationManagementController extends Controller
         return view('admin.stations.index', compact('stations'));
     }
 
+    public function pending()
+    {
+        $pendingStations = Station::with('user')
+            ->where('approval_status', 'pending')
+            ->latest()
+            ->get();
+
+        return view('admin.stations.pending', compact('pendingStations'));
+    }
+
+    public function approve(Station $station)
+    {
+        $station->update(['approval_status' => 'approved']);
+
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'อนุมัติสถานีสำเร็จแล้วครับ');
+    }
+
+    public function reject(Station $station)
+    {
+        $this->stations->deleteStation($station);
+
+        return redirect()->route('admin.dashboard')
+            ->with('success', 'ปฏิเสธสถานีแล้วครับ');
+    }
+
+    public function approveDriverLog(DriverStationAuditLog $log)
+    {
+        if (!$log->isPending()) {
+            return back()->with('error', 'คำขอนี้ถูกดำเนินการไปแล้ว');
+        }
+
+        $action = $log->action;
+        $this->stations->approveAuditLog($log);
+
+        $message = $action === 'delete'
+            ? 'อนุมัติการลบสถานีเรียบร้อยแล้ว'
+            : 'อนุมัติการแก้ไขสถานีเรียบร้อยแล้ว';
+
+        return back()->with('success', $message);
+    }
+
+    public function rejectDriverLog(DriverStationAuditLog $log)
+    {
+        if (!$log->isPending()) {
+            return back()->with('error', 'คำขอนี้ถูกดำเนินการไปแล้ว');
+        }
+
+        $this->stations->rejectAuditLog($log);
+
+        return back()->with('success', 'ยกเลิกคำขอเรียบร้อยแล้ว');
+    }
+
     public function show(Station $station)
     {
         $station->load(['user', 'connectors', 'facilities', 'reviews.user']);
@@ -28,61 +88,9 @@ class StationManagementController extends Controller
         return view('admin.stations.show', compact('station'));
     }
 
-    public function update(Request $request, Station $station)
+    public function update(UpdateAdminStationRequest $request, Station $station)
     {
-        $validated = $request->validate([
-            'name'       => 'required|string|max:255',
-            'address'    => 'required|string',
-            'lat'        => 'required|numeric',
-            'lng'        => 'required|numeric',
-            'open_time'  => 'nullable',
-            'close_time' => 'nullable',
-            'image'      => 'nullable|image|max:10240',
-            'gallery_images'   => 'nullable|array',
-            'gallery_images.*' => 'nullable|image|max:10240',
-            'facilities'       => 'nullable|array',
-            'facilities.*'     => 'integer|exists:facilities,id',
-        ]);
-
-        $imagePath = $station->image;
-        if ($request->hasFile('image')) {
-            if (!empty($station->image)) {
-                Storage::disk('public')->delete($station->image);
-            }
-            $imagePath = $this->compressAndStoreImage($request->file('image'), 'stations');
-
-
-
-        }
-
-        $gallery = collect($station->gallery_images ?? [])
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
-
-        if ($request->hasFile('gallery_images')) {
-            foreach ($request->file('gallery_images') as $galleryImage) {
-                if (!$galleryImage) continue;
-                $gallery[] = $this->compressAndStoreImage($galleryImage, 'stations');
-            }
-
-        }
-
-        $station->update([
-            'name'           => $validated['name'],
-            'address'        => $validated['address'],
-            'lat'            => $validated['lat'],
-            'lng'            => $validated['lng'],
-            'open_time'      => $validated['open_time'] ?? null,
-            'close_time'     => $validated['close_time'] ?? null,
-            'image'          => $imagePath,
-            'gallery_images'=> $gallery,
-        ]);
-
-        if (array_key_exists('facilities', $validated)) {
-            $station->facilities()->sync($validated['facilities'] ?? []);
-        }
+        $this->stations->updateDirect($station, $request->validated(), $request);
 
         return redirect()
             ->route('admin.stations.show', $station)
@@ -91,19 +99,7 @@ class StationManagementController extends Controller
 
     public function destroy(Station $station)
     {
-        // ลบรูปจาก storage (หากเก็บเป็น path)
-        if (!empty($station->image)) {
-            Storage::disk('public')->delete($station->image);
-        }
-
-        $gallery = collect($station->gallery_images ?? [])
-            ->filter()
-            ->unique();
-        foreach ($gallery as $img) {
-            Storage::disk('public')->delete($img);
-        }
-
-        $station->delete();
+        $this->stations->deleteStation($station);
 
         return redirect()->route('admin.stations.index')
             ->with('success', 'ลบสถานีสำเร็จแล้วครับ');
@@ -134,54 +130,59 @@ class StationManagementController extends Controller
             Storage::disk('public')->delete($data['image_path']);
         }
 
-        $gallery = $gallery->reject(fn($img) => $img === $data['image_path'])->values()->all();
-
-        $station->update(['gallery_images' => $gallery]);
+        $station->update([
+            'gallery_images' => $gallery
+                ->reject(fn ($img) => $img === $data['image_path'])
+                ->values()
+                ->all(),
+        ]);
 
         return back()->with('success', 'ลบรูปภาพในแกลลอรีแล้วครับ');
     }
 
-    public function updateConnector(Request $request, Station $station, Connector $connector)
+    public function updateConnector(ConnectorRequest $request, Station $station, Connector $connector)
     {
-        $validated = $request->validate([
-            'type'  => 'required|in:CCS2,CHAdeMO,Type2,GB/T',
-            'total' => 'required|integer|min:1',
-        ]);
-
-        // ป้องกันแก้ connector ของสถานีอื่น
         if ($connector->station_id !== $station->id) {
             abort(404);
         }
 
-        $connector->update([
-            'type'  => $validated['type'],
-            'total' => $validated['total'],
-        ]);
+        $validated = $request->validated();
+
+        if ($connector->type !== $validated['type']) {
+            $exists = $station->connectors()
+                ->where('type', $validated['type'])
+                ->where('id', '!=', $connector->id)
+                ->exists();
+
+            if ($exists) {
+                return back()->with('error', 'ประเภทหัวชาร์จนี้มีอยู่แล้วในสถานีนี้');
+            }
+        }
+
+        $connector->update($validated);
 
         return back()->with('success', 'แก้ไขหัวชาร์จแล้วครับ');
     }
 
     public function destroyConnector(Station $station, Connector $connector)
     {
-        if ($connector->station_id !== $station->id) abort(404);
+        if ($connector->station_id !== $station->id) {
+            abort(404);
+        }
 
         $connector->delete();
 
         return back()->with('success', 'ลบหัวชาร์จแล้วครับ');
     }
 
-    public function addConnector(Request $request, Station $station)
+    public function addConnector(ConnectorRequest $request, Station $station)
     {
-        $validated = $request->validate([
-            'type'  => 'required|in:CCS2,CHAdeMO,Type2,GB/T',
-            'total' => 'required|integer|min:1',
-        ]);
+        $validated = $request->validated();
 
-        Connector::create([
-            'station_id' => $station->id,
-            'type'       => $validated['type'],
-            'total'      => $validated['total'],
-        ]);
+        $station->connectors()->updateOrCreate(
+            ['type' => $validated['type']],
+            ['total' => $validated['total']]
+        );
 
         return back()->with('success', 'เพิ่มหัวชาร์จสำเร็จแล้วครับ');
     }
@@ -194,8 +195,4 @@ class StationManagementController extends Controller
         return redirect()->route('admin.stations.show', $stationId)
             ->with('success', 'ลบคอมเมนต์สำเร็จแล้วครับ');
     }
-
-    // ใช้ compressAndStoreImage จาก Base Controller (App\Http\Controllers\Controller)
-
 }
-

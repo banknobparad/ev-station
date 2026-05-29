@@ -25,9 +25,8 @@ class User extends Authenticatable
         'role',
         'status',
         'phone',
-        'national_id',
-        'birthdate',
-        'otp',
+        'citizen_id',
+        'birth_date',
     ];
 
     public function stations()
@@ -64,7 +63,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'birth_date'        => 'date',
         ];
     }
 }

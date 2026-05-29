@@ -41,7 +41,7 @@
                     <i class="bi bi-plus-circle-fill"></i>
                     <span>เพิ่มสถานี</span>
                 </a>
-                <a href="{{ route('driver.account') }}" class="bottom-nav-item {{ request()->routeIs('driver.account') ? 'active' : '' }}">
+                <a href="{{ route('driver.account') }}" class="bottom-nav-item {{ request()->routeIs('driver.account', 'driver.profile.*') ? 'active' : '' }}">
                     <i class="bi bi-person-fill"></i>
                     <span>Account</span>
                 </a>
@@ -78,6 +78,9 @@
                         <a href="{{ route('provider.stations.index') }}" class="nav-link-ev">
                             <i class="bi bi-ev-station"></i>สถานีของฉัน
                         </a>
+                        <a href="{{ route('provider.profile.edit') }}" class="nav-link-ev {{ request()->routeIs('provider.profile.*') ? 'active' : '' }}">
+                            <i class="bi bi-person"></i>โปรไฟล์
+                        </a>
                     @elseif(auth()->user()->role === 'admin')
                         <a href="{{ route('admin.dashboard') }}" class="nav-link-ev">
                             <i class="bi bi-grid"></i>Dashboard
@@ -103,6 +106,13 @@
                                     {{ auth()->user()->email ?? '-' }}
                                 </span>
                             </li>
+                            @if (auth()->user()->role === 'provider')
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('provider.profile.edit') }}">
+                                        <i class="bi bi-person me-2"></i>โปรไฟล์
+                                    </a>
+                                </li>
+                            @endif
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
