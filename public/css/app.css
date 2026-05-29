@@ -32,7 +32,9 @@ body {
     z-index: 900;
 }
 
-#map {
+/* Map (driver only). Avoid affecting admin/provider map ids if any */
+.driver-app-shell #map,
+.driver-content #map {
     position: absolute;
     top: 0;
     left: 0;
@@ -41,14 +43,17 @@ body {
     z-index: 100;
 }
 
+/* Overlay above map, under navbar/bottom-nav */
 .driver-overlay {
     position: absolute;
-    top: 0.9rem;
     left: 0;
     right: 0;
+    top: 0.9rem;
     z-index: 1020;
     pointer-events: auto;
 }
+
+
 
 /* ===== NAVBAR ===== */
 .navbar-ev {
